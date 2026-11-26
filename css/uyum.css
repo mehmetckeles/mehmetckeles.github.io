@@ -21,3 +21,10 @@
 .uyum textarea{width:100%}
 .uyum fieldset.kisi{margin-top:18px}
 @media(max-width:369px){.olcek{gap:2px}.olcek span{height:40px;border-radius:8px}}
+.uyum .ana{margin-top:16px;padding-top:14px;border-top:1px dashed var(--rule)}
+.uyum .ana[hidden]{display:none}
+.uyum .ana .s-metin{font-size:var(--t-kucuk)}
+.uyum textarea#u-cumle{min-height:200px}
+.uclar:has(span:nth-child(3)){display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:start}
+.uclar:has(span:nth-child(3)) span:nth-child(2){text-align:center}
+.uclar:has(span:nth-child(3)) span:nth-child(3){text-align:right}
