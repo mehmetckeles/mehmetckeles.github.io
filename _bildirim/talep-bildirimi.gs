@@ -226,7 +226,10 @@ function talepOku(v) {
   t.kopekAdi = kopekAdi(v[4]);
   t.hitap = hitap(v[2]);
   t.wa = telefon(v[3]);
-  if (/^tan[ıi]şma/i.test(t.tur)) {
+  if (/^uyum/i.test(t.tur)) {
+    t.cesit = 'uyum';
+    t.konu = ham.replace(/^Konu:\s*/, '');
+  } else if (/^tan[ıi]şma/i.test(t.tur)) {
     t.cesit = 'tanisma';
   } else if (/^g[üu]nd[üu]z/i.test(ham)) {
     t.cesit = 'gunduz';
@@ -245,6 +248,9 @@ function talepOku(v) {
 
 function whatsappMetni(t) {
   var icin = t.kopekAdi ? t.kopekAdi + ' için ' : '';
+  if (t.cesit === 'uyum') {
+    return t.hitap + ', ' + (t.kopekAdi ? t.kopekAdi + ' hakkında ' : '') + 'yazdıklarınızı aldım. Okuyup üzerine düşüneceğim, sonra sizi arayacağım.';
+  }
   if (t.cesit === 'tanisma') {
     return t.hitap + ', ' + icin + 'tanışma talebinizi aldım. Uygun bir günü birlikte belirlemek için sizi arayacağım.';
   }
@@ -261,6 +267,7 @@ function whatsappMetni(t) {
 }
 
 function ozet(t) {
+  if (t.cesit === 'uyum') return 'Köpekle ilgili konu' + (t.konu ? ' · ' + t.konu : '');
   if (t.cesit === 'tanisma') return 'Tanışma';
   if (t.cesit === 'gunduz') {
     var n = t.gunler ? t.gunler.length : 0;

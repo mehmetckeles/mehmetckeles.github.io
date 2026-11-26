@@ -1,0 +1,23 @@
+/* /uyum/: köpekle ilgili bir konu, 0–10 dokunmalı ölçekler */
+.uyum .soru{padding:22px 0;border-top:1px solid var(--rule)}
+.uyum .soru:first-of-type{border-top:none;padding-top:6px}
+.uyum .s-no{font-family:var(--mono);font-size:var(--t-etiket);color:var(--muted);margin:0 0 6px;letter-spacing:.1em}
+.uyum .s-metin{display:block;font-family:var(--display);font-size:var(--t-metin);font-weight:500;line-height:1.35;color:var(--ink);margin:0 0 14px}
+.uyum .s-metin small{display:block;font-weight:400;font-size:var(--t-kucuk);color:var(--muted);margin-top:2px}
+.olcek{display:grid;grid-template-columns:repeat(11,1fr);gap:4px}
+.olcek label{position:relative;cursor:pointer}
+.olcek input{position:absolute;opacity:0;pointer-events:none}
+.olcek span{display:flex;align-items:center;justify-content:center;height:44px;border:1px solid var(--rule);border-radius:10px;
+  font-family:var(--display);font-size:var(--t-kucuk);color:var(--ink-2);transition:background .12s,border-color .12s}
+.olcek label:hover span{border-color:var(--ink)}
+.olcek input:checked + span{background:var(--hl);color:var(--hl-ink);border-color:var(--ink);font-weight:600}
+.olcek input:focus-visible + span{outline:2px solid var(--ink);outline-offset:2px}
+.uclar{display:flex;justify-content:space-between;margin-top:8px;font-size:var(--t-etiket);font-family:var(--mono);color:var(--muted);letter-spacing:.04em}
+.uclar span:nth-child(2):not(:last-child){text-align:center}
+.uyum .soru.bad .s-metin{color:#c0392b}
+.uyum .soru.pasif{opacity:.35;pointer-events:none}
+.uyum .yalniz{display:flex;align-items:center;gap:8px;margin:-10px 0 4px;font-family:var(--display);font-size:var(--t-kucuk);color:var(--ink-2)}
+.uyum .yalniz input{width:18px;height:18px;accent-color:var(--hl)}
+.uyum textarea{width:100%}
+.uyum fieldset.kisi{margin-top:18px}
+@media(max-width:369px){.olcek{gap:2px}.olcek span{height:40px;border-radius:8px}}

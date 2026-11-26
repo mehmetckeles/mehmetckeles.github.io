@@ -158,6 +158,29 @@ with sync_playwright() as p:
     hp.goto(BASE+'/on-rezervasyon/'); hp.wait_for_timeout(400)
     ok('"Hatırla" kaldırılınca bilgiler silinir', hp.locator('#r-tanidik').is_hidden() and hp.input_value('#r-ad')=='')
     hc.close()
+    # ---------- KÖPEKLE İLGİLİ KONU (/uyum/) ----------
+    pg=page(); pg.goto(BASE+'/uyum/'); pg.wait_for_timeout(500)
+    ok('Konu formu: 6 tane 0–10 ölçek, her biri 11 kutu', pg.locator('.olcek').count()==7 and pg.locator('.olcek').first.locator('label').count()==11)
+    pg.click('button[type=submit]'); pg.wait_for_timeout(150)
+    ok('Konu formu: boş gönderilemez, eksikler işaretlenir', len(pg.sent)==0 and pg.locator('.soru.bad').count()>=8)
+    def sec(ad,v): pg.locator('input[name="%s"][value="%s"]'%(ad,v)).check(force=True)
+    for k in ['Havlama','Korku']: sec('konu',k)
+    sec('siklik',9); sec('siddet',8); sec('sure','Bir yıldan uzun'); sec('gidisat',7); sec('yuk',9); sec('denenen',2); sec('ev',3); sec('hazir',3)
+    pg.fill('#u-ad','Ayşe Yılmaz'); pg.fill('#u-tel','05321112233'); pg.fill('#u-kopek','Pamuk, golden, 3 yaş')
+    pg.click('button[type=submit]'); pg.wait_for_timeout(500)
+    d=urllib.parse.parse_qs(pg.sent[0]) if pg.sent else {}
+    a=d.get('entry.71232531',[''])[0]
+    ok('Konu formu: tür "Uyum çalışması", konu tarih alanında', d.get('entry.1679659265',[''])[0]=='Uyum çalışması' and d.get('entry.130478542',[''])[0]=='Konu: Havlama, Korku', d.get('entry.130478542'))
+    ok('Okuma: ağırlaşıyor, ertelenmiş, yorgun-hazır değil, evde tutarsız', all(x in a for x in ['Ağırlaşıyor','Ertelenmiş','Yorgun ve hazır değil','Evde herkes farklı']), a)
+    ok('Okuma: telefonda ilk soru önerilir', 'Telefonda ilk soru: Bu kadar zamandır sizi bir şey yapmaktan alıkoyan neydi?' in a, a[-120:])
+    ok('Konu formu: teşekkür ekranı', pg.locator('#tesekkur').is_visible())
+    pg=page(); pg.goto(BASE+'/uyum/'); pg.wait_for_timeout(300)
+    pg.locator('input[name="konu"][value="Hırlama ya da ısırma"]').check(force=True)
+    for ad in ['siklik','siddet','gidisat','yuk','denenen','hazir']: pg.locator('input[name="%s"][value="5"]'%ad).check(force=True)
+    pg.locator('#u-yalniz').check(); pg.locator('input[name="sure"][value="Birkaç aydır"]').check(force=True)
+    pg.fill('#u-ad','A'); pg.fill('#u-tel','0532'); pg.fill('#u-kopek','B'); pg.click('button[type=submit]'); pg.wait_for_timeout(400)
+    a=urllib.parse.parse_qs(pg.sent[0])['entry.71232531'][0] if pg.sent else ''
+    ok('"Evde yalnız" seçilince ev sorusu atlanır; hepsi aynı sayıysa uyarı düşer', 'Evde aynı davranış: evde yalnız' in a and 'bütün ölçeklerde aynı sayı (5)' in a, a)
     # tanışma formu
     pg=page(); pg.goto(BASE+'/tanisma-gorusmesi/'); pg.wait_for_timeout(500)
     for el in pg.locator('form [required]').all():
