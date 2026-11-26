@@ -122,7 +122,7 @@ with sync_playwright() as p:
     ok('Bilgisayarda da "Planla" görünür', gz.locator('header .planla-btn').is_visible()); gz.close()
     pg.goto(BASE+'/'); pg.click('header .planla-btn'); pg.wait_for_timeout(400)
     ok('"Planla" planla sayfasını açar, dört seçenek', pg.url.endswith('/planla/') and pg.locator('.secenek').count()==4)
-    ok('Planla: Tanışma kartı iki amacı söyler, ayrı Uyum kartı yok', 'köpeğinizle ilgili bir konu' in pg.text_content('a.secenek[href="../tanisma-gorusmesi/"]') and pg.locator('a.secenek[href="../uyum/"]').count()==0)
+    ok('Planla: Tanışma kartı iki amacı söyler, ayrı Uyum kartı yok', 'köpeğinizi daha iyi anlamak' in pg.text_content('a.secenek[href="../tanisma-gorusmesi/"]') and pg.locator('a.secenek[href="../uyum/"]').count()==0)
     tz=ctx.new_page(); tz.goto(BASE+'/tanisma-gorusmesi/'); tz.wait_for_timeout(300)
     ok('Tanışma: "Ne için" seçimi var, konu kartı uyum formuna gider', tz.locator('.ne-icin a.ne-kart[href="../uyum/"]').count()==1 and tz.locator('.ne-kart.secili').count()==1); tz.close()
     pg.click('.secenek.ana'); pg.wait_for_timeout(500)

@@ -127,6 +127,6 @@
 .ne-kart strong{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--display);font-size:1.1rem;font-weight:500}
 .ne-kart strong i{font-style:normal}
 .ne-kart span{display:block;margin-top:3px;color:var(--muted)}
-.ne-kart.secili{background:var(--hl);color:var(--hl-ink);border-color:var(--hl)}
-.ne-kart.secili span{color:var(--hl-ink);opacity:.75}
 a.ne-kart:active{transform:scale(.99)}
+.ne-kart.aka{background:#BC002D;border-color:#BC002D;color:#FFF}
+.ne-kart.aka span{color:#FFF;opacity:.85}
