@@ -27,18 +27,26 @@
 
   /* giriş ve çıkış aynı günse: gündüz misafirliği, birden çok gün eklenebilir */
   var gIn=document.querySelector('[name="giris"]'), gOut=document.querySelector('[name="cikis"]'), kutu=document.getElementById('r-gunduz');
+  /* ?tur=gunduz: yalnız getirilecek gün sorulur, alınacak gün aynı gün sayılır */
+  var gunduzModu=u.get('tur')==='gunduz'&&gIn&&gOut&&kutu;
+  if(gunduzModu){
+    var alan=gOut.closest('.field'); alan.hidden=true; gOut.required=false;
+    gIn.closest('.field').classList.add('full');
+    var lbl=document.querySelector('label[for="'+gIn.id+'"]'); if(lbl) lbl.innerHTML='Getireceğiniz gün <em>*</em>';
+    var ip=kutu.querySelector('.hint'); if(ip) ip.textContent='Köpeğiniz akşam evine dönüyor. Başka günler de gelecekse buraya ekleyebilirsiniz.';
+  }
   (function(){
     if(!gIn||!gOut) return;
     var t=new Date(), bugun=t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0');
     gIn.min=bugun; gOut.min=gIn.value||bugun;
     var elle=!!gOut.value;
-    function ayarla(){ if(!gIn.value) return; gOut.min=gIn.value; if(!elle||!gOut.value||gOut.value<gIn.value){gOut.value=gIn.value;gOut.dispatchEvent(new Event('change'));} }
+    function ayarla(){ if(!gIn.value) return; gOut.min=gIn.value; if(gunduzModu||!elle||!gOut.value||gOut.value<gIn.value){gOut.value=gIn.value;gOut.dispatchEvent(new Event('change'));} }
     gIn.addEventListener('change',ayarla); gIn.addEventListener('input',ayarla);
     gOut.addEventListener('input',function(){ if(gOut.value) elle=true; });
   })();
   if(gIn&&gOut&&kutu){
     var liste=document.getElementById('r-ekgunler');
-    function bak(){kutu.hidden=!(gIn.value&&gIn.value===gOut.value)}
+    function bak(){kutu.hidden=gunduzModu?false:!(gIn.value&&gIn.value===gOut.value)}
     gIn.addEventListener('change',bak);gOut.addEventListener('change',bak);gIn.addEventListener('input',bak);gOut.addEventListener('input',bak);bak();
     function ekle(deger){
       if(liste.children.length>=14) return;

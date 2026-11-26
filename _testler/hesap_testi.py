@@ -111,6 +111,27 @@ with sync_playwright() as p:
     pg.click('button[type=submit]'); pg.wait_for_timeout(500)
     d=urllib.parse.parse_qs(pg.sent[0]) if pg.sent else {}
     ok('Form (geceli): talep "giriş → çıkış" olarak gider', d.get('entry.130478542',[''])[0]==tr(D(10))+' → '+tr(D(14)), d.get('entry.130478542'))
+    # ---------- HIZLI KAPI: Planla düğmesi, ana sayfa kutusu, planla sayfası, gündüz formu ----------
+    pg=page(); pg.goto(BASE+'/'); pg.wait_for_timeout(500)
+    ok('Ana sayfa: ilk ekranda "Gündüz misafirliği planla" ve "Konaklama planla"', pg.locator('.aile a.btn').count()==2 and pg.locator('.aile a.btn').first.bounding_box()['y']<400)
+    ok('Ana sayfa: kutu bağlantıları doğru yere gider', [a.get_attribute('href') for a in pg.locator('.aile a').all()]==['on-rezervasyon/?tur=gunduz','on-rezervasyon/','odeme/','ucret/'])
+    eksik=[y for y in ['/','/konaklama.html','/okullar.html','/tut.html','/yazilar.html','/cv.html','/ucret/','/odeme/','/on-rezervasyon/','/tanisma-gorusmesi/','/planla/'] if (pg.goto(BASE+y) or True) and not pg.locator('header .planla-btn').is_visible()]
+    ok('Her sayfanın başında sarı "Planla" görünür (telefonda)', not eksik, eksik)
+    gz=ctx.new_page(); gz.set_viewport_size({'width':1280,'height':800}); gz.goto(BASE+'/konaklama.html'); gz.wait_for_timeout(300)
+    ok('Bilgisayarda da "Planla" görünür', gz.locator('header .planla-btn').is_visible()); gz.close()
+    pg.goto(BASE+'/'); pg.click('header .planla-btn'); pg.wait_for_timeout(400)
+    ok('"Planla" planla sayfasını açar, dört seçenek', pg.url.endswith('/planla/') and pg.locator('.secenek').count()==4)
+    pg.click('.secenek.ana'); pg.wait_for_timeout(500)
+    ok('Planla → Gündüz: sade form açılır (alınacak gün sorulmaz)', 'tur=gunduz' in pg.url and pg.locator('#r-out').is_hidden() and pg.inner_text('label[for=r-in]').startswith('Getireceğiniz gün') and pg.locator('#r-gunduz').is_visible())
+    pg.fill('#r-in',D(5)); pg.wait_for_timeout(60); pg.click('#r-ekle'); pg.locator('#r-ekgunler input').last.fill(D(6))
+    pg.fill('#r-ad','Test'); pg.fill('#r-tel','05000000000'); pg.fill('#r-kopek','Test'); pg.fill('#r-alerji','yok')
+    pg.click('button[type=submit]'); pg.wait_for_timeout(500)
+    d=urllib.parse.parse_qs(pg.sent[0]) if pg.sent else {}
+    ok('Gündüz formu: talep "Gündüz: …" olarak gider', d.get('entry.130478542',[''])[0]=='Gündüz: '+tr(D(5))+', '+tr(D(6)), d.get('entry.130478542'))
+    pg=page(); pg.goto(BASE+'/on-rezervasyon/?tur=gunduz'); pg.wait_for_timeout(400)
+    pg.fill('#r-ad','Test'); pg.fill('#r-tel','05000000000'); pg.fill('#r-kopek','Test'); pg.fill('#r-alerji','yok')
+    pg.click('button[type=submit]'); pg.wait_for_timeout(200)
+    ok('Gündüz formu: gün seçilmeden gönderilmez, tek eksik sayılır', len(pg.sent)==0 and pg.inner_text('.warn').startswith('Bir soru eksik'), pg.inner_text('.warn'))
     # tanışma formu
     pg=page(); pg.goto(BASE+'/tanisma-gorusmesi/'); pg.wait_for_timeout(500)
     for el in pg.locator('form [required]').all():

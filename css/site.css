@@ -48,6 +48,29 @@ nav.main a:hover{color:var(--ink);border-bottom-color:var(--ink)}
 .menu-btn{font-family:var(--display);font-size:var(--t-kucuk);font-weight:500;background:none;border:1px solid var(--ink);
   color:var(--ink);border-radius:99px;padding:7px 16px;cursor:pointer}
 @media(min-width:860px){nav.main{display:flex}.menu-btn{display:none}}
+.top .sag{display:flex;align-items:center;gap:8px}
+.planla-btn{font-family:var(--display);font-size:var(--t-kucuk);font-weight:500;background:var(--hl);color:var(--hl-ink);
+  border:1px solid var(--hl);border-radius:99px;padding:7px 16px}
+.planla-btn:hover{filter:brightness(.96)}
+@media(min-width:860px){.top .sag{margin-left:28px}}
+@media(max-width:369px){.top .brand{font-size:.82rem;white-space:nowrap}.planla-btn,.menu-btn{padding:6px 12px}}
+/* ana sayfa: tanıyan aileler için hızlı kapı */
+.aile{padding:18px 0 0}
+.aile .kutu{border:1px solid var(--rule);border-radius:16px;padding:16px}
+.aile .row{display:flex;flex-direction:column;gap:10px}
+.aile .btn{justify-content:space-between;width:100%}
+.aile .alt{display:flex;justify-content:space-between;margin:12px 2px 0;font-size:var(--t-kucuk)}
+.aile .alt a{color:var(--ink-2);border-bottom:1px solid var(--rule)}
+@media(min-width:860px){.aile .row{flex-direction:row}.aile .btn{width:auto;flex:1}}
+/* planla sayfası */
+.planla .secenek{display:block;border:1px solid var(--rule);border-radius:16px;padding:18px 20px;margin-top:12px;color:var(--ink)}
+.planla .secenek strong{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--display);font-size:1.25rem;font-weight:500}
+.planla .secenek span{display:block;margin-top:4px;color:var(--muted)}
+.planla .secenek.ana{background:var(--hl);color:var(--hl-ink);border-color:var(--hl)}
+.planla .secenek.ana span{color:var(--hl-ink);opacity:.75}
+.planla .secenek:active{transform:scale(.99)}
+.planla .secenek i{font-style:normal}
+.planla .lead{margin:10px 0 18px;color:var(--ink-2)}
 
 .sheet{position:fixed;inset:0;z-index:40;background:var(--paper);display:flex;flex-direction:column;
   padding:0 var(--pad) 32px;transform:translateY(-100%);transition:transform .32s cubic-bezier(.2,.7,.2,1);visibility:hidden}

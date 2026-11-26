@@ -122,7 +122,7 @@ def header(prefix):
       <a href="{p}cv.html">CV</a>
       <button class="theme" type="button" data-theme-toggle>Gece</button>
     </nav>
-    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="sheet" data-menu>Menü</button>
+    <div class="sag"><a class="planla-btn" href="/planla/">Planla</a><button class="menu-btn" type="button" aria-expanded="false" aria-controls="sheet" data-menu>Menü</button></div>
   </div>
 </header>
 <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="Menü">

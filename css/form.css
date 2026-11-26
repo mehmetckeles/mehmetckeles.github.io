@@ -106,3 +106,5 @@
 .ek-gun button:hover{color:var(--ink)}
 .ek-ekle{align-self:flex-start}
 .result .row span:last-child{white-space:nowrap}
+
+.field[hidden]{display:none}
