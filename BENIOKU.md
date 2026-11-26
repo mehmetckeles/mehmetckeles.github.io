@@ -58,5 +58,5 @@ Her sayfanın başında, Menü'nün yanında sarı "Planla" düğmesi var (/plan
 
 ## Köpekle ilgili konu formu (/uyum/)
 
-Planla sayfasındaki "Uyum çalışması" kartından açılır; arama motorlarına kapalı. On soru (0–10 dokunmalı ölçekler), Mehmet için bir "Okuma" (js/uyum.js) ve aileye çıkışta gösterilen 18 düşünüşten biri ile haikusu (js/uyum-dusunus.js; seçim cevaplara göre puanlamayla). Gönderim "Site talepleri" tablosuna gider; bildirim betiği her formu ayrıca "Konu formları" sekmesine sütun sütun yazar, sarı sütunlar Mehmet'in değerlendirmesi için. Değerlendirme rehberi Drive'da: "Konu formu · değerlendirme rehberi" (https://docs.google.com/document/d/1xVL7RKwIVDeXj3p41MxY9MozNptj8arY8Cuzp2e1_Es/edit).
+Tanışma sayfasının başındaki "Ne için tanışmak istiyorsunuz?" seçiminden açılır (Planla → Tanışma); arama motorlarına kapalı. On soru (0–10 dokunmalı ölçekler), Mehmet için bir "Okuma" (js/uyum.js) ve aileye çıkışta gösterilen 18 düşünüşten biri ile haikusu (js/uyum-dusunus.js; seçim cevaplara göre puanlamayla). Gönderim "Site talepleri" tablosuna gider; bildirim betiği her formu ayrıca "Konu formları" sekmesine sütun sütun yazar, sarı sütunlar Mehmet'in değerlendirmesi için. Değerlendirme rehberi Drive'da: "Konu formu · değerlendirme rehberi" (https://docs.google.com/document/d/1xVL7RKwIVDeXj3p41MxY9MozNptj8arY8Cuzp2e1_Es/edit).
 

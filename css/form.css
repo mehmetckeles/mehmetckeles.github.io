@@ -119,3 +119,14 @@
 .hatirla{display:block;margin:20px 0 4px;font-family:var(--display);font-size:var(--t-kucuk);color:var(--ink)}
 .hatirla input{width:18px;height:18px;margin:0 8px 0 0;vertical-align:-3px;accent-color:var(--hl)}
 .hatirla small{display:block;margin:4px 0 0 26px;color:var(--muted);font-family:var(--serif,inherit)}
+
+/* Tanışma: ne için */
+.ne-icin{margin:22px 0 28px}
+.ne-icin-soru{font-family:var(--display);font-weight:500;font-size:var(--t-metin);margin:0 0 4px}
+.ne-kart{display:block;border:1px solid var(--rule);border-radius:16px;padding:14px 18px;margin-top:10px;color:var(--ink);text-decoration:none}
+.ne-kart strong{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--display);font-size:1.1rem;font-weight:500}
+.ne-kart strong i{font-style:normal}
+.ne-kart span{display:block;margin-top:3px;color:var(--muted)}
+.ne-kart.secili{background:var(--hl);color:var(--hl-ink);border-color:var(--hl)}
+.ne-kart.secili span{color:var(--hl-ink);opacity:.75}
+a.ne-kart:active{transform:scale(.99)}
