@@ -8,6 +8,7 @@
   function gonder(f){
     var fd=new FormData(f), tur=f.dataset.form==='tanisma'?'Tanışma':'Ön rezervasyon', satir=[];
     Object.keys(ETIKET).forEach(function(k){var v=(fd.get(k)||'').toString().trim(); if(v) satir.push(ETIKET[k]+': '+v)});
+    if(fd.get('degisti')==='hayir') satir.push(ETIKET.degisiklik+': yok');
     var ek=fd.getAll('ek_gun').filter(Boolean).map(trTarih);
     var ayniGun=tur!=='Tanışma'&&fd.get('giris')&&fd.get('giris')===fd.get('cikis');
     var tarih=tur==='Tanışma'?(fd.get('konaklama_tarihleri')||''):(ayniGun?('Gündüz: '+[trTarih(fd.get('giris'))].concat(ek).join(', ')):(trTarih(fd.get('giris'))+' → '+trTarih(fd.get('cikis'))));
@@ -60,6 +61,38 @@
     (u.get('ek')||'').split(',').filter(function(x){return /^\d{4}-\d{2}-\d{2}$/.test(x)}).forEach(ekle);
   }
 
+  /* "değişen bir şey var mı?": Evet seçilirse ne değiştiği sorulur */
+  document.querySelectorAll('input[name="degisti"]').forEach(function(r){
+    r.addEventListener('change',function(){
+      var alan=document.getElementById('r-degisim-alan'), t=document.getElementById('r-degisim'); if(!alan) return;
+      var evet=r.form.querySelector('input[name="degisti"]:checked').value==='evet';
+      alan.hidden=!evet; t.required=evet; if(evet) t.focus({preventScroll:true});
+    });
+  });
+
+  /* tanıyan aileler: iletişim ve köpek bilgisi yalnızca bu cihazda saklanır, bir dahaki formda hazır gelir */
+  var ANAHTAR='mck-aile', KAYIT_ALAN=['ad','soyad','telefon','kopek'];
+  function oku(){try{return JSON.parse(localStorage.getItem(ANAHTAR)||'null')}catch(e){return null}}
+  function yaz(f){
+    var kutu=f.querySelector('#r-hatirla'); if(!kutu) return;
+    try{
+      if(!kutu.checked){localStorage.removeItem(ANAHTAR);return}
+      var o={}; KAYIT_ALAN.forEach(function(k){var el=f.querySelector('[name="'+k+'"]'); if(el) o[k]=el.value.trim()});
+      localStorage.setItem(ANAHTAR,JSON.stringify(o));
+    }catch(e){}
+  }
+  (function(){
+    var f=document.querySelector('form[data-form="rezervasyon"]'), kart=document.getElementById('r-tanidik'); if(!f||!kart) return;
+    var o=oku(); if(!o||!o.ad||!o.telefon||!o.kopek) return;
+    KAYIT_ALAN.forEach(function(k){var el=f.querySelector('[name="'+k+'"]'); if(el&&o[k]&&!el.value) el.value=o[k]});
+    var kisi=document.getElementById('r-kisi'), kopekAlan=f.querySelector('[name="kopek"]').closest('.field');
+    var ozet=document.getElementById('r-ozet');
+    ozet.textContent='';
+    [((o.ad||'')+' '+(o.soyad||'')).trim(), o.telefon+' · '+o.kopek].forEach(function(t){var sp=document.createElement('span'); sp.textContent=t; ozet.appendChild(sp)});
+    kart.hidden=false; kisi.hidden=true; kopekAlan.hidden=true;
+    document.getElementById('r-degistir').addEventListener('click',function(){kart.hidden=true; kisi.hidden=false; kopekAlan.hidden=false; f.querySelector('[name="ad"]').focus({preventScroll:true})});
+  })();
+
   document.querySelectorAll('form[data-form]').forEach(function(f){
     f.addEventListener('submit',function(e){
       e.preventDefault();
@@ -77,6 +110,7 @@
       warn.hidden=true;
       var btn=f.querySelector('button[type=submit]'); btn.disabled=true;
       gonder(f).then(function(){
+        yaz(f);
         f.hidden=true;
         var ok=document.getElementById('tesekkur'); ok.hidden=false;
         window.scrollTo(0,0);

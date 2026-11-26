@@ -108,3 +108,14 @@
 .result .row span:last-child{white-space:nowrap}
 
 .field[hidden]{display:none}
+
+/* tanıyan aile: kayıtlı bilgiler tek satırda */
+.tanidik{border:1px solid var(--rule);border-radius:14px;padding:16px 18px;margin:0 0 8px;display:grid;grid-template-columns:1fr auto;gap:4px 12px;align-items:center}
+.tanidik[hidden],fieldset[hidden]{display:none}
+.tanidik .label{grid-column:1/-1;margin:0}
+.tanidik-ozet{margin:0;font-family:var(--display);color:var(--ink)}
+.tanidik-ozet span{display:block}
+.tanidik-degistir{font-family:var(--display);font-size:var(--t-kucuk);background:none;border:1px solid var(--rule);color:var(--ink);border-radius:99px;padding:6px 14px;cursor:pointer}
+.hatirla{display:block;margin:20px 0 4px;font-family:var(--display);font-size:var(--t-kucuk);color:var(--ink)}
+.hatirla input{width:18px;height:18px;margin:0 8px 0 0;vertical-align:-3px;accent-color:var(--hl)}
+.hatirla small{display:block;margin:4px 0 0 26px;color:var(--muted);font-family:var(--serif,inherit)}

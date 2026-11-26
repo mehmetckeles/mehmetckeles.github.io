@@ -67,7 +67,12 @@
     <h1>Ön <b>rezervasyon</b></h1>
     <p class="lead">Daha önce tanıştıysak tarihlerinizi buradan gönderebilirsiniz. Talebiniz gelince sizi arayıp teyit ederim.</p>
     <form class="form-panel open flat" id="f-rez" novalidate data-form="rezervasyon">
-          <fieldset>
+          <div class="tanidik" id="r-tanidik" hidden>
+            <p class="label">Bilgileriniz</p>
+            <p class="tanidik-ozet" id="r-ozet"></p>
+            <button class="tanidik-degistir" type="button" id="r-degistir">Değiştir</button>
+          </div>
+          <fieldset id="r-kisi">
             <legend><span>01</span>Size nasıl ulaşalım?</legend>
             <div class="form-grid">
               <div class="field"><label for="r-ad">Adınız <em>*</em></label><input id="r-ad" name="ad" autocomplete="given-name" required></div>
@@ -92,11 +97,13 @@
           <fieldset>
             <legend><span>03</span>Bilmem gerekenler</legend>
             <div class="form-grid">
-              <div class="field full"><label for="r-degisim">Son görüşmemizden bu yana sağlığında ya da davranışında bir değişiklik oldu mu?</label><textarea id="r-degisim" name="degisiklik"></textarea></div>
-              <div class="field"><label for="r-ilac">İlaç ya da özel bakım ihtiyacı</label><input id="r-ilac" name="ilac" placeholder="Varsa"></div>
-              <div class="field"><label for="r-alerji">Bilinen bir alerjisi var mı? <em>*</em></label><input id="r-alerji" name="alerji" required placeholder="Yoksa “yok” yazmanız yeterli"></div>
+              <div class="field full"><span class="lbl">Son görüşmemizden bu yana değişen bir şey var mı? <em>*</em></span><div class="choices">
+                <label><input type="radio" name="degisti" value="hayir" required><span>Hayır, her şey aynı</span></label>
+                <label><input type="radio" name="degisti" value="evet"><span>Evet</span></label></div></div>
+              <div class="field full" id="r-degisim-alan" hidden><label for="r-degisim">Ne değişti?</label><textarea id="r-degisim" name="degisiklik" placeholder="Sağlık, davranış, ilaç, alerji ya da özel bakım…"></textarea></div>
             </div>
           </fieldset>
+          <label class="hatirla"><input type="checkbox" id="r-hatirla" checked> Bilgilerimi bu telefonda hatırla <small>Yalnızca bu cihazda saklanır; bir dahaki talepte yeniden yazmanız gerekmez.</small></label>
           <p class="warn" hidden role="alert"></p>
           <div class="form-foot">
             <button class="btn primary" type="submit">Ön rezervasyon talebini gönder <span class="ar">→</span></button>

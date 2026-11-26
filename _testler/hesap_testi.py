@@ -18,6 +18,7 @@ TODAY=dt.date.today(); D=lambda n:(TODAY+dt.timedelta(days=n)).isoformat()
 with sync_playwright() as p:
     b=p.chromium.launch(executable_path='/usr/bin/google-chrome')
     ctx=b.new_context(viewport={'width':390,'height':844},permissions=['clipboard-read','clipboard-write'])
+    ctx.add_init_script("try{localStorage.removeItem('mck-aile')}catch(e){}")  # tanıyan-aile kaydı ayrı bağlamda sınanır
     errs=[]
     def page():
         pg=ctx.new_page(); pg.on('pageerror',lambda e:errs.append(str(e)))
@@ -96,7 +97,7 @@ with sync_playwright() as p:
     ok('Form: gündüz kutusu görünür', pg.locator('#r-gunduz').is_visible())
     pg.click('button[type=submit]'); pg.wait_for_timeout(200)
     ok('Form: zorunlu alan eksikse uyarı çıkar, gönderilmez', pg.locator('.warn').is_visible() and len(pg.sent)==0, pg.inner_text('.warn'))
-    pg.fill('#r-ad','Test'); pg.fill('#r-tel','05000000000'); pg.fill('#r-kopek','Test'); pg.fill('#r-alerji','yok')
+    pg.fill('#r-ad','Test'); pg.fill('#r-tel','05000000000'); pg.fill('#r-kopek','Test'); pg.check('input[name=degisti][value=hayir]',force=True)
     pg.click('button[type=submit]'); pg.wait_for_timeout(500)
     d=urllib.parse.parse_qs(pg.sent[0]) if pg.sent else {}
     tr=lambda x:'.'.join(reversed(x.split('-')))
@@ -107,7 +108,7 @@ with sync_playwright() as p:
     ok('Form: bırakılan gün seçilince alınan gün aynı güne gelir', pg.input_value('#r-out')==D(10))
     pg.fill('#r-out',D(14)); pg.wait_for_timeout(60)
     ok('Form: geceli konaklamada gündüz kutusu gizli', not pg.locator('#r-gunduz').is_visible())
-    pg.fill('#r-ad','Test'); pg.fill('#r-tel','05000000000'); pg.fill('#r-kopek','Test'); pg.fill('#r-alerji','yok')
+    pg.fill('#r-ad','Test'); pg.fill('#r-tel','05000000000'); pg.fill('#r-kopek','Test'); pg.check('input[name=degisti][value=hayir]',force=True)
     pg.click('button[type=submit]'); pg.wait_for_timeout(500)
     d=urllib.parse.parse_qs(pg.sent[0]) if pg.sent else {}
     ok('Form (geceli): talep "giriş → çıkış" olarak gider', d.get('entry.130478542',[''])[0]==tr(D(10))+' → '+tr(D(14)), d.get('entry.130478542'))
@@ -124,14 +125,38 @@ with sync_playwright() as p:
     pg.click('.secenek.ana'); pg.wait_for_timeout(500)
     ok('Planla → Gündüz: sade form açılır (alınacak gün sorulmaz)', 'tur=gunduz' in pg.url and pg.locator('#r-out').is_hidden() and pg.inner_text('label[for=r-in]').startswith('Getireceğiniz gün') and pg.locator('#r-gunduz').is_visible())
     pg.fill('#r-in',D(5)); pg.wait_for_timeout(60); pg.click('#r-ekle'); pg.locator('#r-ekgunler input').last.fill(D(6))
-    pg.fill('#r-ad','Test'); pg.fill('#r-tel','05000000000'); pg.fill('#r-kopek','Test'); pg.fill('#r-alerji','yok')
+    pg.fill('#r-ad','Test'); pg.fill('#r-tel','05000000000'); pg.fill('#r-kopek','Test'); pg.check('input[name=degisti][value=hayir]',force=True)
     pg.click('button[type=submit]'); pg.wait_for_timeout(500)
     d=urllib.parse.parse_qs(pg.sent[0]) if pg.sent else {}
     ok('Gündüz formu: talep "Gündüz: …" olarak gider', d.get('entry.130478542',[''])[0]=='Gündüz: '+tr(D(5))+', '+tr(D(6)), d.get('entry.130478542'))
     pg=page(); pg.goto(BASE+'/on-rezervasyon/?tur=gunduz'); pg.wait_for_timeout(400)
-    pg.fill('#r-ad','Test'); pg.fill('#r-tel','05000000000'); pg.fill('#r-kopek','Test'); pg.fill('#r-alerji','yok')
+    pg.fill('#r-ad','Test'); pg.fill('#r-tel','05000000000'); pg.fill('#r-kopek','Test'); pg.check('input[name=degisti][value=hayir]',force=True)
     pg.click('button[type=submit]'); pg.wait_for_timeout(200)
     ok('Gündüz formu: gün seçilmeden gönderilmez, tek eksik sayılır', len(pg.sent)==0 and pg.inner_text('.warn').startswith('Bir soru eksik'), pg.inner_text('.warn'))
+    # ---------- TANIYAN AİLE: bilgiler bu cihazda hatırlanır ----------
+    hc=b.new_context(viewport={'width':390,'height':844})
+    hp=hc.new_page(); hp.on('pageerror',lambda e:errs.append(str(e))); hs=[]; hp.route('**/formResponse',lambda r:(hs.append(r.request.post_data),r.fulfill(status=200,body='')))
+    hp.goto(BASE+'/on-rezervasyon/'); hp.wait_for_timeout(400)
+    ok('İlk ziyaret: tanıdık kart yok, tüm alanlar açık', hp.locator('#r-tanidik').is_hidden() and hp.locator('#r-ad').is_visible())
+    hp.fill('#r-ad','Ayşe'); hp.fill('#r-soyad','Yılmaz'); hp.fill('#r-tel','05321112233'); hp.fill('#r-kopek','Pamuk, golden')
+    hp.fill('#r-in',D(12)); hp.fill('#r-out',D(14)); hp.check('input[name=degisti][value=evet]',force=True); hp.wait_for_timeout(80)
+    ok('"Evet" seçilince "Ne değişti?" açılır', hp.locator('#r-degisim').is_visible())
+    hp.click('button[type=submit]'); hp.wait_for_timeout(200)
+    ok('"Evet" deyip yazmadan gönderilemez', len(hs)==0)
+    hp.fill('#r-degisim','Yeni mama'); hp.click('button[type=submit]'); hp.wait_for_timeout(500)
+    d=urllib.parse.parse_qs(hs[0]) if hs else {}
+    ok('Değişiklik talebe yazılır', 'Son görüşmeden beri değişiklik: Yeni mama' in d.get('entry.71232531',[''])[0], d.get('entry.71232531'))
+    hp.goto(BASE+'/on-rezervasyon/?tur=gunduz'); hp.wait_for_timeout(400)
+    ok('İkinci ziyaret: "Ayşe Yılmaz · 05321112233 · Pamuk, golden" tek satırda', hp.locator('#r-tanidik').is_visible() and hp.inner_text('#r-ozet')=='Ayşe Yılmaz\n05321112233 · Pamuk, golden' and hp.locator('#r-ad').is_hidden() and hp.locator('#r-kopek').is_hidden(), hp.inner_text('#r-ozet'))
+    hp.fill('#r-in',D(20)); hp.check('input[name=degisti][value=hayir]',force=True); hp.click('button[type=submit]'); hp.wait_for_timeout(500)
+    d=urllib.parse.parse_qs(hs[1]) if len(hs)>1 else {}
+    ok('İkinci talep: yalnız gün ve "Hayır" ile gider; ad, telefon, köpek dolu', d.get('entry.1228144126',[''])[0]=='Ayşe Yılmaz' and d.get('entry.1329993373',[''])[0]=='05321112233' and d.get('entry.2127242662',[''])[0]=='Pamuk, golden' and d.get('entry.130478542',[''])[0]=='Gündüz: '+tr(D(20)) and 'Son görüşmeden beri değişiklik: yok' in d.get('entry.71232531',[''])[0], d)
+    hp.goto(BASE+'/on-rezervasyon/'); hp.wait_for_timeout(400); hp.click('#r-degistir'); hp.wait_for_timeout(80)
+    ok('"Değiştir" kayıtlı bilgileri açar', hp.locator('#r-ad').is_visible() and hp.input_value('#r-ad')=='Ayşe' and hp.locator('#r-tanidik').is_hidden())
+    hp.uncheck('#r-hatirla'); hp.fill('#r-in',D(25)); hp.fill('#r-out',D(26)); hp.check('input[name=degisti][value=hayir]',force=True); hp.click('button[type=submit]'); hp.wait_for_timeout(500)
+    hp.goto(BASE+'/on-rezervasyon/'); hp.wait_for_timeout(400)
+    ok('"Hatırla" kaldırılınca bilgiler silinir', hp.locator('#r-tanidik').is_hidden() and hp.input_value('#r-ad')=='')
+    hc.close()
     # tanışma formu
     pg=page(); pg.goto(BASE+'/tanisma-gorusmesi/'); pg.wait_for_timeout(500)
     for el in pg.locator('form [required]').all():
