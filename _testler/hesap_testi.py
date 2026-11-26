@@ -176,6 +176,8 @@ with sync_playwright() as p:
     ok('Okuma: ağırlaşıyor, sahibinin yanında başlamış, ertelenmiş, yorgun-hazır değil, daha çok formu dolduranla', all(x in a for x in ['Ağırlaşıyor','Sahibinin yanındayken başlamış','Ertelenmiş','Yorgun ve hazır değil','Daha çok formu doldurana']), a)
     ok('Okuma: telefonda ilk soru önerilir', 'Telefonda ilk soru: Bu başladığında evde ya da sizin hayatınızda ne değişmişti?' in a, a[-120:])
     ok('Konu formu: teşekkür ekranı', pg.locator('#tesekkur').is_visible())
+    ok('Çıkışta bir düşünüş ve üç dizelik haiku görünür; seçilen düşünüş size gelen talepte yazar', pg.locator('#u-d-ad').inner_text()!='' and pg.locator('#u-d-haiku span').count()==3 and ('Gösterilen düşünüş: ' in a) and pg.locator('.uyum h1').is_hidden() and pg.locator('#f-uyum').is_hidden(), (pg.locator('#u-d-ad').inner_text(), a[-60:]))
+    ok('Uzun süredir, az şey denenmiş, hazırlık düşük: "Sonra" gösterilir', pg.locator('#u-d-ad').inner_text()=='Sonra', pg.locator('#u-d-ad').inner_text())
     pg=page(); pg.goto(BASE+'/uyum/'); pg.wait_for_timeout(300)
     pg.locator('input[name="konu"][value="Hırlama ya da ısırma"]').check(force=True)
     for ad in ['siklik','siddet','gidisat','yuk','denenen','hazir']: pg.locator('input[name="%s"][value="5"]'%ad).check(force=True)

@@ -52,6 +52,7 @@ function kur() {
   anahtar();
   var sayfa = ss.getSheets()[0];
   if (!sayfa.getRange(1, SUTUN_TAKVIM).getValue()) sayfa.getRange(1, SUTUN_TAKVIM).setValue('Takvim');
+  konuSekmesi(ss);
 }
 
 function talepGeldi(e) {
@@ -78,6 +79,72 @@ function satiriGonder(sayfa, satir) {
     name: 'Site talepleri'
   });
   hatirlat(t, b);
+  if (t.cesit === 'uyum') konuKaydet(sayfa.getParent(), v);
+}
+
+/* ---------- köpekle ilgili konu formları: ayrı sekmede, her soru bir sütun ---------- */
+
+var KONU_SEKME = 'Konu formları';
+var KONU_SUTUN = [
+  ['Geldiği an', null], ['Ad', null], ['Telefon', null], ['Köpek', null],
+  ['Ne zamandır sizinle', 'Köpek ne zamandır sizinle'], ['En çok zorlayan', 'En çok zorlayan'],
+  ['İşaretlenen konular', 'İşaretlenen konular'], ['Sıklık', 'Sıklık'], ['Şiddet', 'Şiddet'],
+  ['İlk ne zaman fark edildi', 'İlk ne zaman fark edildi'], ['Son aylarda gidişat', 'Son aylarda gidişat'],
+  ['Sahibini yorması', 'Sahibini yorması'], ['Denenenler', 'Denenenler'], ['Kiminle oluyor', 'Kiminle oluyor'],
+  ['Günlük düzeni değiştirebilme', 'Günlük düzeni değiştirebilme'], ['Doldurma süresi (sn)', 'Doldurma süresi'],
+  ['Anlattıkları', '#anlatti'], ['Okuma', '#okuma'], ['Telefonda ilk soru', 'Telefonda ilk soru'],
+  ['Gösterilen düşünüş', 'Gösterilen düşünüş']
+];
+var KONU_DEGERLENDIRME = ['Görüşme tarihi', 'Telefonda ne çıktı', 'Form ne kadar yansıttı (0–10)', 'Okuma tuttu mu', 'Köpeği görünce', 'Notlar'];
+
+function konuSekmesi(ss) {
+  var sh = ss.getSheetByName(KONU_SEKME);
+  if (!sh) {
+    sh = ss.insertSheet(KONU_SEKME);
+    var bas = KONU_SUTUN.map(function (k) { return k[0]; }).concat(KONU_DEGERLENDIRME);
+    sh.getRange(1, 1, 1, bas.length).setValues([bas]).setFontWeight('bold');
+    sh.getRange(1, KONU_SUTUN.length + 1, 1, KONU_DEGERLENDIRME.length).setBackground('#fff8c4');
+    sh.setFrozenRows(1); sh.setFrozenColumns(2);
+  }
+  return sh;
+}
+
+function konuAyikla(v) {
+  var metin = String(v[6]), satirlar = metin.split('\n'), d = {}, okuma = [], anlatti = [], bolum = '';
+  satirlar.forEach(function (l) {
+    if (l === 'OKUMA') { bolum = 'okuma'; return; }
+    if (l === 'Anlattıkları:') { bolum = 'anlatti'; return; }
+    if (bolum === 'anlatti') { if (/^OKUMA$/.test(l)) { bolum = 'okuma'; return; } if (l !== '' || anlatti.length) anlatti.push(l); return; }
+    if (bolum === 'okuma' && /^· /.test(l)) { okuma.push(l.slice(2)); return; }
+    var m = l.match(/^([^:(]+?)(?:\s*\([^)]*\))?:\s*(.*)$/);
+    if (m) d[m[1].trim()] = m[2].trim();
+  });
+  d['#okuma'] = okuma.join('\n');
+  d['#anlatti'] = anlatti.join('\n').trim();
+  return d;
+}
+
+function konuKaydet(ss, v) {
+  var sh = konuSekmesi(ss), d = konuAyikla(v);
+  var son = sh.getLastRow();
+  if (son > 1) {
+    var var_ = sh.getRange(2, 1, son - 1, 3).getDisplayValues();
+    if (var_.some(function (r) { return r[0] === v[0] && r[2] === v[3]; })) return;
+  }
+  var sayi = function (x) { var m = String(x || '').match(/^(\d+)\/10$/); return m ? +m[1] : (x || ''); };
+  var satir = KONU_SUTUN.map(function (k, i) {
+    if (i === 0) return v[0]; if (i === 1) return v[2]; if (i === 2) return v[3]; if (i === 3) return v[4];
+    var x = d[k[1]] || ''; if (k[1] === 'Doldurma süresi') x = String(x).replace(/\s*sn$/, '');
+    return sayi(x);
+  });
+  sh.appendRow(satir);
+}
+
+/* Bir kez: ana sekmedeki eski konu formlarını yeni sekmeye taşır (tekrar yazmaz). */
+function konuFormlariniDoldur() {
+  var ss = SpreadsheetApp.getActive(), ana = ss.getSheets()[0];
+  var v = ana.getRange(2, 1, Math.max(ana.getLastRow() - 1, 0), 7).getDisplayValues();
+  v.forEach(function (r) { if (/^uyum/i.test(r[1])) konuKaydet(ss, r); });
 }
 
 /* ---------- takvim ---------- */

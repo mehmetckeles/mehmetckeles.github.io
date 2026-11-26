@@ -79,7 +79,7 @@
       baslangic:f.querySelector('input[name="baslangic"]:checked').value,sizinle:f.querySelector('input[name="sizinle"]:checked').value,
       gidisat:deger('gidisat'),yuk:deger('yuk'),denenen:deger('denenen'),ev:yalniz.checked?null:deger('ev'),hazir:deger('hazir'),
       saniye:bas?Math.round((Date.now()-bas)/1000):null, cumle:f.querySelector('[name="cumle"]').value.trim()};
-    var ok=okuma(c);
+    var ok=okuma(c), d=window.dusunusSec(c);
     var satir=[
       'En çok zorlayan: '+c.ana,
       'İşaretlenen konular: '+c.konu.join(', '),
@@ -93,10 +93,11 @@
       'Kiminle oluyor (0 daha çok formu doldurana, 5 herkese, 10 daha çok başkalarına): '+(c.ev===null?'evde yalnız':c.ev+'/10'),
       'Günlük düzeni değiştirebilme: '+c.hazir+'/10'
     ];
-    if(c.cumle) satir.push('','Anlattıkları:',c.cumle);
     if(c.saniye) satir.push('Doldurma süresi: '+c.saniye+' sn');
+    if(c.cumle) satir.push('','Anlattıkları:',c.cumle);
     satir.push('','OKUMA'); ok.satirlar.forEach(function(s){satir.push('· '+s)});
     satir.push('','Telefonda ilk soru: '+ok.ilk);
+    satir.push('Gösterilen düşünüş: '+d.no+'. '+d.ad);
     var p=new URLSearchParams();
     p.append(ALAN.tur,'Uyum çalışması');
     p.append(ALAN.ad,f.querySelector('[name="ad"]').value.trim());
@@ -106,6 +107,10 @@
     p.append(ALAN.ayrinti,satir.join('\n'));
     var btn=f.querySelector('button[type=submit]'); btn.disabled=true;
     fetch(FORM,{method:'POST',mode:'no-cors',body:p}).then(function(){
+      document.getElementById('u-d-ad').textContent=d.ad;
+      document.getElementById('u-d-metin').textContent=d.metin;
+      var h=document.getElementById('u-d-haiku'); h.innerHTML=''; d.haiku.forEach(function(m){var sp=document.createElement('span');sp.textContent=m;h.appendChild(sp)});
+      document.querySelector('.uyum h1').hidden=true; document.querySelector('.uyum .lead').hidden=true; document.querySelector('.uyum .back').hidden=true;
       f.hidden=true; document.getElementById('tesekkur').hidden=false; window.scrollTo(0,0);
     }).catch(function(){
       btn.disabled=false; warn.hidden=false; warn.textContent='Gönderilemedi; bağlantıda bir sorun olmuş olabilir. Biraz sonra yeniden deneyebilir ya da WhatsApp\'tan yazabilirsiniz: 0505 280 64 48';
