@@ -70,6 +70,8 @@ nav.main a:hover{color:var(--ink);border-bottom-color:var(--ink)}
 .planla .secenek.ana span{color:var(--hl-ink);opacity:.75}
 .planla .secenek:active{transform:scale(.99)}
 .planla .secenek i{font-style:normal}
+.planla .secenek.ara{opacity:.72;border-style:dashed}
+.planla .secenek .durum{display:inline-block;margin-top:10px;font-style:normal;font-family:var(--mono);font-size:var(--t-etiket);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border:1px solid var(--rule);border-radius:99px;padding:3px 10px}
 .planla .lead{margin:10px 0 18px;color:var(--ink-2)}
 
 .sheet{position:fixed;inset:0;z-index:40;background:var(--paper);display:flex;flex-direction:column;
