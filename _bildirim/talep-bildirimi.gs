@@ -133,7 +133,7 @@ function konuKaydet(ss, v) {
   }
   var sayi = function (x) { var m = String(x || '').match(/^(\d+)\/10$/); return m ? +m[1] : (x || ''); };
   var satir = KONU_SUTUN.map(function (k, i) {
-    if (i === 0) return v[0]; if (i === 1) return v[2]; if (i === 2) return v[3]; if (i === 3) return v[4];
+    if (i === 0) return v[0]; if (i === 1) return v[2]; if (i === 2) return "'" + v[3]; if (i === 3) return v[4];
     var x = d[k[1]] || ''; if (k[1] === 'Doldurma süresi') x = String(x).replace(/\s*sn$/, '');
     return sayi(x);
   });
