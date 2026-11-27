@@ -61,7 +61,7 @@ function odemeTutar(o){window.sonOdemeTutar=o.detail;document.dispatchEvent(new 
     q('.c-out').addEventListener('change',cikisDegisti); q('.c-out').addEventListener('input',cikisDegisti);
     q('.c-in').addEventListener('change',girisDegisti); q('.c-in').addEventListener('input',girisDegisti);
     function calc(){
-      var a=q('.c-in').value,b=q('.c-out').value,t=q('.c-time').value||'12:00';
+      var a=q('.c-in').value,b=q('.c-out').value,t=q('.c-time').value||'19:00';
       var bosAdim='<div class="tutar-blok"><p class="adim"><span>2</span>Ödeyeceğiniz tutar</p><p class="tutar-bos">Tarihleri girince tutar burada görünür.</p></div>';
       if(!a||!b){res.innerHTML=odeme?bosAdim:'';kutu.hidden=true;if(odeme)odemeTutar({detail:null});return}
       var g=nights(a,b);
@@ -123,6 +123,7 @@ function odemeTutar(o){window.sonOdemeTutar=o.detail;document.dispatchEvent(new 
       if(tarih.test(u.get('cikis')||'')){ q('.c-out').value=u.get('cikis'); cikisElle=true; }
       else if(q('.c-in').value) q('.c-out').value=q('.c-in').value;
       if(/^\d{2}:\d{2}$/.test(u.get('saat')||'')) q('.c-time').value=u.get('saat');
+      else if(tarih.test(u.get('giris')||'')) q('.c-time').value='12:00';   /* saatsiz eski bağlantılar 12.00 ile hazırlanmıştı */
       var k=parseInt(u.get('kopek'),10); if(k>=1&&k<=10){ n=k; out.textContent=n; }
       (u.get('ek')||'').split(',').filter(function(x){return tarih.test(x)}).forEach(ekGun);
       var o=parseInt(u.get('oran'),10);
@@ -133,7 +134,7 @@ function odemeTutar(o){window.sonOdemeTutar=o.detail;document.dispatchEvent(new 
       var p=new URLSearchParams(), a=q('.c-in').value, b=q('.c-out').value;
       if(!a||!b) return null;
       p.set('giris',a); p.set('cikis',b);
-      if(q('.c-time').value&&q('.c-time').value!=='12:00') p.set('saat',q('.c-time').value);
+      if(q('.c-time').value) p.set('saat',q('.c-time').value);   /* saat her zaman yazılır */
       if(n>1) p.set('kopek',n);
       var ek=[].map.call(ekListe.querySelectorAll('input'),function(i){return i.value}).filter(Boolean);
       if(a===b&&ek.length) p.set('ek',ek.join(','));
