@@ -24,6 +24,18 @@
 .bz{max-width:36rem}
 .bz .selam{font-family:var(--display);font-size:var(--t-metin);color:var(--ink-2);margin-bottom:10px}
 .bz .sure{font-family:var(--mono);font-size:var(--t-etiket);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:14px}
+.bz .karsi{font-family:var(--display);font-size:clamp(1.15rem,4.6vw,1.4rem);color:var(--ink);margin-top:14px;line-height:1.4}
+.bz .tarihler{margin-top:26px;background:var(--hl);color:var(--hl-ink);border-radius:16px;padding:18px 20px;display:grid;grid-template-columns:1fr 1fr;gap:6px 16px}
+.bz .tarihler .label{color:var(--hl-ink);opacity:.7}
+.bz .tarihler .gun{font-family:var(--display);font-weight:600;font-size:clamp(1.15rem,5vw,1.4rem);line-height:1.25;margin-top:4px}
+.bz .tarihler .sure{grid-column:1/-1;color:var(--hl-ink);opacity:.75;margin-top:8px}
+.bz .tarihler.tek{grid-template-columns:1fr}
+.bz .ucret-ince{display:grid;grid-template-columns:1fr auto;gap:2px 12px;align-items:baseline;margin-top:36px;padding-top:16px;border-top:1px solid var(--rule);color:var(--ink-2);text-decoration:none}
+.bz .ucret-ince .ui-sol{display:flex;flex-direction:column;gap:4px}
+.bz .ucret-ince .alt{font-size:var(--t-kucuk);color:var(--muted)}
+.bz .ucret-ince strong{font-family:var(--display);font-weight:500;font-size:var(--t-metin);color:var(--ink)}
+.bz .ucret-ince i{font-style:normal;color:var(--muted)}
+.bz .ucret-ince .not{grid-column:1/-1}
 .bz .kart{margin-top:28px;border:1px solid var(--rule);border-radius:16px;padding:18px 20px}
 .bz .kart .label{margin-bottom:8px}
 .bz .kart p{color:var(--ink-2);line-height:1.7}
@@ -86,18 +98,22 @@
     <section class="bz" id="bz">
       <p class="selam" id="bz-selam" hidden></p>
       <h1 id="bz-baslik">Köpeğiniz <b>ikinci evinde.</b></h1>
-      <p class="sure" id="bz-sure"></p>
+      <p class="karsi" id="bz-karsi">Rezervasyonunuzu yaptım.</p>
+      <div class="tarihler">
+        <div><p class="label" id="bz-l1">Getireceğiniz gün</p><p class="gun" id="bz-g1"></p></div>
+        <div id="bz-ikinci"><p class="label">Alacağınız gün</p><p class="gun" id="bz-g2"></p></div>
+        <p class="sure" id="bz-sure"></p>
+      </div>
       <div class="kart">
         <p class="label">Gelmeden önce</p>
         <p id="bz-getir">Getireceğiniz saat kesinleştiğinde bana haber vermeniz yeterli.</p>
       </div>
-      <a class="kart ucret" id="bz-ucret">
-        <p class="label">Tahmini ücret <i>→</i></p>
-        <strong id="bz-tutar"></strong>
-        <p class="alt" id="bz-dokum"></p>
-        <p class="alt not" id="bz-not" hidden></p>
-      </a>
       <p class="imza">Görüşmek üzere,<br>Mehmet Cihat Keleş</p>
+      <a class="ucret-ince" id="bz-ucret">
+        <span class="ui-sol"><span class="label">Tahmini ücret</span><span class="alt" id="bz-dokum"></span></span>
+        <span class="ui-sag"><strong id="bz-tutar"></strong> <i>→</i></span>
+        <span class="alt not" id="bz-not" hidden></span>
+      </a>
     </section>
 
     <section class="hz" id="hz" hidden>
@@ -172,13 +188,13 @@
   function de(z){return AYDA[z.split(' ').pop()]||''}
   /* Pamuk'un, Lokum'un, Badem'in, Zeytin'in, Fındık'ın, Bulut'un, Köpük'ün, Mia'nın */
   function in_(ad){
-    var v=(ad.toLocaleLowerCase('tr-TR').match(/[aeıioöuü]/g)||['e']).pop(), son=ad.slice(-1).toLocaleLowerCase('tr-TR');
+    var kucuk=ad.toLocaleLowerCase('tr-TR'), yi=/[^aeıioöuü]y$/.test(kucuk), v=yi?'i':(kucuk.match(/[aeıioöuü]/g)||['e']).pop(), son=yi?'i':kucuk.slice(-1);
     var u={a:'ı',ı:'ı',e:'i',i:'i',o:'u',u:'u',ö:'ü',ü:'ü'}[v];
     return ad+"'"+(/[aeıioöuü]/.test(son)?'n':'')+u+'n';
   }
   /* Pamuk'u, Badem'i, Mia'yı, Şans'ı, Köpük'ü */
   function i_(ad){
-    var v=(ad.toLocaleLowerCase('tr-TR').match(/[aeıioöuü]/g)||['e']).pop(), son=ad.slice(-1).toLocaleLowerCase('tr-TR');
+    var kucuk=ad.toLocaleLowerCase('tr-TR'), yi=/[^aeıioöuü]y$/.test(kucuk), v=yi?'i':(kucuk.match(/[aeıioöuü]/g)||['e']).pop(), son=yi?'i':kucuk.slice(-1);
     var u={a:'ı',ı:'ı',e:'i',i:'i',o:'u',u:'u',ö:'ü',ü:'ü'}[v];
     return ad+"'"+(/[aeıioöuü]/.test(son)?'y':'')+u;
   }
@@ -197,6 +213,12 @@
   var h=document.getElementById('bz-baslik'); h.textContent=kopekAd+' '+zaman+de(zaman)+' ';
   var bb=document.createElement('b'); bb.textContent='ikinci evinde.'; h.appendChild(bb);
   if(kime){ var sl=document.getElementById('bz-selam'); sl.textContent='Merhaba '+buyuk(kime)+','; sl.hidden=false; }
+  var GUN=['Pazar','Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi'];
+  function uzun(x){var d=new Date(x+'T12:00');return d.getDate()+' '+AY[d.getMonth()]+', '+GUN[d.getDay()]}
+  document.getElementById('bz-g1').textContent=uzun(a);
+  if(a===b){ document.getElementById('bz-ikinci').hidden=true; document.querySelector('.tarihler').classList.add('tek'); document.getElementById('bz-l1').textContent='Getireceğiniz gün'; }
+  else document.getElementById('bz-g2').textContent=uzun(b);
+  document.getElementById('bz-karsi').textContent='Rezervasyonunuzu yaptım. '+(k?i_(kopekAd):'Köpeğinizi')+' bekliyoruz.';
   var r=hesap(a,b,n);
   document.getElementById('bz-sure').textContent=r.g>0?r.g+' gece':'Gündüz misafirliği';
   document.getElementById('bz-tutar').textContent=tl(r.tutar);
