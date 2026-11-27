@@ -129,6 +129,8 @@ with sync_playwright() as p:
     ok('Misafirliği hazırla: mesaj "…8–16 Aralık için rezervasyonunuzu yaptım. Pamuk\'u bekliyoruz…", bağlantıda ad yok', bm.startswith("Merhaba Ali Bey, 8–16 Aralık için rezervasyonunuzu yaptım. Pamuk'u bekliyoruz.") and 'Pamuk' not in bl and 'Ali' not in bl and '/bizde/#' in bl, (bm,bl))
     bz.goto(bl); bz.wait_for_timeout(300)
     ok('Aile sayfası: "Pamuk 8–16 Aralık\'ta ikinci evinde.", 8 gece, 19.380 TL', bz.text_content('h1')=="Pamuk 8–16 Aralık'ta ikinci evinde." and bz.text_content('#bz-sure')=='8 gece' and bz.text_content('#bz-tutar')=='19.380 TL', (bz.text_content('h1'),bz.text_content('#bz-tutar')))
+    bz.click('#bz-ucret'); bz.wait_for_timeout(800)
+    ok('Tahmini ücret kartı ödeme sayfasını aynı tarih ve adla açar', '/odeme/' in bz.url and 'giris=2026-12-08' in bz.url and bz.text_content('#odeme-baslik')=='Ali Bey, şimdiden teşekkürler.' and bz.text_content('#gonder-tutar')=='19.380 TL', (bz.url, bz.text_content('#gonder-tutar')))
     bz.close()
     tz=ctx.new_page(); tz.goto(BASE+'/tanisma-gorusmesi/'); tz.wait_for_timeout(300)
     ok('Tanışma: "Ne için" seçimi var, konu kartı uyum formuna gider', tz.locator('.ne-icin a.ne-kart[href="../uyum/"]').count()==1 and tz.locator('.ne-kart.secili').count()==1); tz.close()

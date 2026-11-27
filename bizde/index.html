@@ -28,7 +28,10 @@
 .bz .kart .label{margin-bottom:8px}
 .bz .kart p{color:var(--ink-2);line-height:1.7}
 .bz .ucret{background:var(--hl);color:var(--hl-ink);border-color:var(--hl)}
-.bz .ucret .label{color:var(--hl-ink);opacity:.7}
+.bz .ucret{display:block;text-decoration:none}
+.bz .ucret .label{color:var(--hl-ink);opacity:.7;display:flex;justify-content:space-between}
+.bz .ucret .label i{font-style:normal;font-family:var(--display);font-size:1.2rem;opacity:.9;line-height:1}
+.bz a.ucret:active{transform:scale(.99)}
 .bz .ucret strong{display:block;font-family:var(--display);font-weight:600;font-size:clamp(1.9rem,7vw,2.4rem);letter-spacing:-.02em;line-height:1.1}
 .bz .ucret .alt{color:var(--hl-ink);opacity:.75;margin-top:6px;font-size:var(--t-kucuk)}
 .bz .imza{margin-top:28px;font-family:var(--display);color:var(--ink-2)}
@@ -87,11 +90,11 @@
         <p class="label">Gelmeden önce</p>
         <p id="bz-getir">Getireceğiniz saat kesinleştiğinde bana haber vermeniz yeterli.</p>
       </div>
-      <div class="kart ucret" id="bz-ucret">
-        <p class="label">Tahmini ücret</p>
+      <a class="kart ucret" id="bz-ucret">
+        <p class="label">Tahmini ücret <i>→</i></p>
         <strong id="bz-tutar"></strong>
         <p class="alt" id="bz-dokum"></p>
-      </div>
+      </a>
       <p class="imza">Görüşmek üzere,<br>Mehmet Cihat Keleş</p>
     </section>
 
@@ -190,6 +193,9 @@
   document.getElementById('bz-tutar').textContent=tl(r.tutar);
   document.getElementById('bz-dokum').textContent=r.satir.join(' · ');
   document.title=kopekAd+' ikinci evinde · Mehmet Cihat Keleş';
+  /* kart ödeme sayfasına götürür: aynı tarihler, köpek sayısı ve ad dolu gelir (bilgiler gizli) */
+  var oq='giris='+a+'&cikis='+b+(n>1?'&kopek='+n:'')+(kime?'&ad='+encodeURIComponent(kime).replace(/%20/g,'+'):'');
+  document.getElementById('bz-ucret').href='/odeme/#'+btoa(unescape(encodeURIComponent(oq))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
 
   function hazirla(){
     document.getElementById('bz').hidden=true; document.getElementById('hz').hidden=false;
