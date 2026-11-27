@@ -39,9 +39,8 @@ body{padding-bottom:48px}
 <main class="pn">
   <div class="pn-ust"><img src="/img/portre-kucuk.jpg" alt=""><div><h1>Panel</h1><p>Paylaşmak için bağlantılar</p></div><button class="theme pn-tema" type="button" data-theme-toggle>Gece</button></div>
 
-  <section class="grup"><p class="label">Konaklama</p><div id="g-konaklama"></div></section>
-  <section class="grup"><p class="label">Okullar</p><div id="g-okullar"></div></section>
-  <section class="grup"><p class="label">Ben</p><div id="g-ben"></div></section>
+  <section class="grup"><p class="label">Ailelere</p><div id="g-aile"></div></section>
+  <section class="grup"><p class="label">Okumaya</p><div id="g-oku"></div></section>
 
   <p class="not">Bu sayfa arama motorlarında görünmez. Telefonun tarayıcı menüsünden "Ana ekrana ekle" derseniz bir uygulama gibi açılır.</p>
 </main>
@@ -55,25 +54,15 @@ body{padding-bottom:48px}
 (function(){
   var K=location.origin;
   var G={
-    'g-konaklama':[
-      {ad:'Ücret',yol:'/ucret/'},
-      {ad:'Konaklama',yol:'/konaklama.html'},
+    'g-aile':[
+      {ad:'Konaklama ve ücret',yol:'/konaklama.html'},
       {ad:'Tanışma formu',yol:'/tanisma-gorusmesi/'},
       {ad:'Ön rezervasyon formu',yol:'/on-rezervasyon/'},
       {ad:'Ödeme',yol:'/odeme/',ek:{yazi:'Hesabı hazırlayıp gönder →',yol:'/odeme/?hazirla'}}
     ],
-    'g-okullar':[
-      {ad:'Okullar',yol:'/okullar.html'},
+    'g-oku':[
       {ad:'Köpeksel Bilgiler Okulası',yol:'/okula/'},
-      {ad:'Tarihten Köpekler',yol:'/tarihten/'},
-      {ad:'Tarihten Köpekler · bugünün yazısı',yol:null,id:'bugun'},
-      {ad:'Finansal Bilgiler Okulası',yol:'/finansal/'}
-    ],
-    'g-ben':[
-      {ad:'Ana sayfa',yol:'/'},
-      {ad:'Temel Uyum Terapisi',yol:'/tut.html'},
-      {ad:'Yazılar',yol:'/yazilar.html'},
-      {ad:'CV',yol:'/cv.html'}
+      {ad:'Tarihten Köpekler · bugünün yazısı',yol:null,id:'bugun'}
     ]
   };
   function kopyala(btn,url){

@@ -42,7 +42,7 @@ Her değişiklikten sonra uçtan uca test: depo klasöründe `python3 -m http.se
 
 ## Panel
 
-mehmetcihatkeles.com/panel: yalnızca Mehmet için, arama motorlarına kapalı (robots.txt ve noindex) paylaşım paneli. Sayfaların listesi panel/index.html içindeki G nesnesinde; yeni bir sayfa eklenince oraya bir satır eklenir. Tarihten Köpekler'in en yeni yazısını articles.json'dan kendisi bulur. Ana ekrana eklenebilir (panel/manifest.webmanifest).
+mehmetcihatkeles.com/panel: yalnızca Mehmet için, arama motorlarına kapalı (robots.txt ve noindex) paylaşım paneli; bilerek sade tutuluyor (Ailelere: Konaklama ve ücret, Tanışma formu, Ön rezervasyon formu, Ödeme; Okumaya: Köpeksel Bilgiler Okulası, Tarihten Köpekler'in günün yazısı). Sayfaların listesi panel/index.html içindeki G nesnesinde; yeni bir sayfa eklenince oraya bir satır eklenir. Tarihten Köpekler'in en yeni yazısını articles.json'dan kendisi bulur. Ana ekrana eklenebilir (panel/manifest.webmanifest).
 
 ## Talep bildirimi
 
