@@ -133,6 +133,7 @@ with sync_playwright() as p:
     ok('Misafirliği hazırla: mesaj "…8–16 Aralık için rezervasyonunuzu yaptım. Pamuk\'u bekliyoruz…", bağlantıda ad yok', bm.startswith("Merhaba Ali Bey, 8–16 Aralık için rezervasyonunuzu yaptım. Pamuk'u bekliyoruz.") and 'Pamuk' not in bl and 'Ali' not in bl and '/bizde/#' in bl, (bm,bl))
     bz.goto(bl); bz.wait_for_timeout(300)
     ok('Aile sayfası: "Pamuk 8–16 Aralık\'ta ikinci evinde.", 8 gece, akşam alışla 21.185 TL ve saat notu', bz.text_content('h1')=="Pamuk 8–16 Aralık'ta ikinci evinde." and bz.text_content('#bz-sure')=='8 gece' and bz.text_content('#bz-karsi')=="Rezervasyonunuzu yaptım. Pamuk'u bekliyoruz." and bz.text_content('#bz-g1')=='8 Aralık, Salı' and bz.text_content('#bz-tutar')=='21.185 TL' and bz.text_content('#bz-not')=='Alış saatinize göre bu tutar değişebilir.', (bz.text_content('h1'),bz.text_content('#bz-tutar')))
+    ok('Konaklamada aşı karnesi ricası ve "Bir yakınınızı paylaşın" düğmesi görünür', bz.locator('#bz-konak').is_visible() and bz.text_content('#bz-karne')=="Pamuk'un aşı karnesini de yanınızda getirmenizi rica ederim." and bz.locator('#bz-acil').is_visible())
     bz.click('#bz-ucret'); bz.wait_for_timeout(800)
     ok('Tahmini ücret kartı ödeme sayfasını aynı tarih ve adla açar', '/odeme/' in bz.url and 'giris=2026-12-08' in bz.url and bz.text_content('#odeme-baslik')=='Ali Bey, şimdiden teşekkürler.' and 'saat=19:00' in bz.url and bz.text_content('#gonder-tutar')=='21.185 TL', (bz.url, bz.text_content('#gonder-tutar')))
     bz.close()

@@ -36,6 +36,10 @@
 .bz .ucret-ince strong{font-family:var(--display);font-weight:500;font-size:var(--t-metin);color:var(--ink)}
 .bz .ucret-ince i{font-style:normal;color:var(--muted)}
 .bz .ucret-ince .not{grid-column:1/-1}
+.bz .konak{margin-top:14px;padding-top:14px;border-top:1px solid var(--rule)}
+.bz .konak p+p{margin-top:8px}
+.bz .konak .btn{margin-top:14px}
+.bz .konak .ipucu{font-size:var(--t-kucuk);color:var(--muted);margin-top:10px}
 .bz .kart{margin-top:28px;border:1px solid var(--rule);border-radius:16px;padding:18px 20px}
 .bz .kart .label{margin-bottom:8px}
 .bz .kart p{color:var(--ink-2);line-height:1.7}
@@ -107,6 +111,12 @@
       <div class="kart">
         <p class="label">Gelmeden önce</p>
         <p id="bz-getir">Getireceğiniz saat kesinleştiğinde bana haber vermeniz yeterli.</p>
+        <div class="konak" id="bz-konak" hidden>
+          <p id="bz-karne">Köpeğinizin aşı karnesini de yanınızda getirmenizi rica ederim.</p>
+          <p>Olur da size ulaşamazsam diye, acil bir durumda arayabileceğim bir yakınınızın bilgilerini benimle paylaşırsanız çok sevinirim.</p>
+          <button class="btn ghost" type="button" id="bz-acil">Bir yakınınızı paylaşın <span class="ar">→</span></button>
+          <p class="ipucu" id="bz-ipucu" hidden>WhatsApp açıldığında ataç simgesine, ardından “Kişi”ye dokunarak rehberinizden seçebilirsiniz.</p>
+        </div>
       </div>
       <p class="imza">Görüşmek üzere,<br>Mehmet Cihat Keleş</p>
       <a class="ucret-ince" id="bz-ucret">
@@ -219,6 +229,22 @@
   if(a===b){ document.getElementById('bz-ikinci').hidden=true; document.querySelector('.tarihler').classList.add('tek'); document.getElementById('bz-l1').textContent='Getireceğiniz gün'; }
   else document.getElementById('bz-g2').textContent=uzun(b);
   document.getElementById('bz-karsi').textContent='Rezervasyonunuzu yaptım. '+(k?i_(kopekAd):'Köpeğinizi')+' bekliyoruz.';
+  /* konaklamada: aşı karnesi ve acil durumda aranacak kişi */
+  if(a!==b){
+    document.getElementById('bz-konak').hidden=false;
+    if(k) document.getElementById('bz-karne').textContent=in_(kopekAd)+' aşı karnesini de yanınızda getirmenizi rica ederim.';
+    var WA='https://wa.me/905052806448?text=', kim='Merhaba, '+(k?kopekAd+' için':'köpeğim için');
+    var rehber=('contacts' in navigator)&&('ContactsManager' in window);
+    if(!rehber) document.getElementById('bz-ipucu').hidden=false;
+    document.getElementById('bz-acil').addEventListener('click',function(){
+      if(rehber){
+        navigator.contacts.select(['name','tel'],{multiple:false}).then(function(l){
+          if(!l||!l.length) return; var c=l[0], ad=(c.name&&c.name[0])||'', tel=(c.tel&&c.tel[0])||'';
+          location.href=WA+encodeURIComponent(kim+' acil durumda ulaşabileceğiniz kişi: '+ad+(tel?' · '+tel:''));
+        }).catch(function(){ location.href=WA+encodeURIComponent(kim+' acil durumda ulaşabileceğiniz kişiyi paylaşıyorum:'); });
+      } else location.href=WA+encodeURIComponent(kim+' acil durumda ulaşabileceğiniz kişiyi paylaşıyorum:');
+    });
+  }
   var r=hesap(a,b,n);
   document.getElementById('bz-sure').textContent=r.g>0?r.g+' gece':'Gündüz misafirliği';
   document.getElementById('bz-tutar').textContent=tl(r.tutar);
