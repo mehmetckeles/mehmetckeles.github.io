@@ -60,3 +60,9 @@ Her sayfanın başında, Menü'nün yanında sarı "Planla" düğmesi var (/plan
 
 Tanışma sayfasının başındaki "Ne için tanışmak istiyorsunuz?" seçiminden açılır (Planla → Tanışma); arama motorlarına kapalı. On soru (0–10 dokunmalı ölçekler), Mehmet için bir "Okuma" (js/uyum.js) ve aileye çıkışta gösterilen 18 düşünüşten biri ile haikusu (js/uyum-dusunus.js; seçim cevaplara göre puanlamayla). Gönderim "Site talepleri" tablosuna gider; bildirim betiği her formu ayrıca "Konu formları" sekmesine sütun sütun yazar, sarı sütunlar Mehmet'in değerlendirmesi için. Değerlendirme rehberi Drive'da: "Konu formu · değerlendirme rehberi" (https://docs.google.com/document/d/1xVL7RKwIVDeXj3p41MxY9MozNptj8arY8Cuzp2e1_Es/edit).
 
+## Misafirlik onayı (/bizde/)
+
+Mehmet bir rezervasyonu kabul edince aileye gönderdiği sayfa. Panelde "Misafirliği hazırla" → /bizde/?hazirla: kime, köpeğin adı, bırakacağı ve alacağı gün, kaç köpek. Ekran WhatsApp'a hazır mesajı ("Merhaba Ali Bey, 8–16 Aralık için rezervasyonunuzu yaptım. Pamuk'u bekliyoruz. Ayrıntılar bu bağlantıda: … Görüşmek üzere.") ve bağlantıyı verir. Ailenin sayfası: "Pamuk 8–16 Aralık'ta ikinci evinde.", gece sayısı, "Gelmeden önce" ricası, tahmini ücret (saat sorulmadığı için öğleden önce alış varsayılır; fiyatlar bizde/index.html içinde, js/hesap.js ile birlikte güncellenir), imza ve WhatsApp düğmesi. Bilgiler bağlantıda # işaretinden sonra okunmaz bir dizi olarak taşınır; ad görünmez. Hiçbir yerde kayıt tutulmaz; tarih değişirse yeni bağlantı gönderilir. Arama motorlarına kapalı.
+
+Ödeme sayfasının "Hesabı hazırlayıp gönder" bağlantıları da aynı yolla gizlidir (/odeme/#…); sayfa açılınca bilgiler adres çubuğuna ?… olarak yerleşir.
+

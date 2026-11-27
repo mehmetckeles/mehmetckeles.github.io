@@ -58,7 +58,8 @@ body{padding-bottom:48px}
       {ad:'Konaklama ve ücret',yol:'/konaklama.html'},
       {ad:'Tanışma formu',yol:'/tanisma-gorusmesi/'},
       {ad:'Ön rezervasyon formu',yol:'/on-rezervasyon/'},
-      {ad:'Ödeme',yol:'/odeme/',ek:{yazi:'Hesabı hazırlayıp gönder →',yol:'/odeme/?hazirla'}}
+      {ad:'Ödeme',yol:'/odeme/',ek:{yazi:'Hesabı hazırlayıp gönder →',yol:'/odeme/?hazirla'}},
+      {ad:'Misafirliği hazırla',yol:'/bizde/?hazirla',hazirla:true}
     ],
     'g-oku':[
       {ad:'Köpeksel Bilgiler Okulası',yol:'/okula/'},
@@ -87,6 +88,7 @@ body{padding-bottom:48px}
       else kopyala(this,d.dataset.url);
     });
     d.querySelector('.kop').addEventListener('click',function(){ if(d.dataset.url) kopyala(this,d.dataset.url); });
+    if(k.hazirla){ var dg=d.querySelector('.dugmeler'); dg.innerHTML='<a class="git">Hazırla →</a>'; dg.firstChild.href=k.yol; d.querySelector('.yol').textContent='Ailelere gideceği günleri ve tahmini ücreti yazan sayfa'; }
     if(k.ek){ var e=document.createElement('div'); e.className='ek'; e.innerHTML='<a class="git"></a>'; e.firstChild.textContent=k.ek.yazi; e.firstChild.href=k.ek.yol; d.appendChild(e); }
     return d;
   }

@@ -1,5 +1,6 @@
 User-agent: *
 Allow: /
 Disallow: /panel/
+Disallow: /bizde/
 
 Sitemap: https://mehmetcihatkeles.com/sitemap.xml
