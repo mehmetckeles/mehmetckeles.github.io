@@ -33,6 +33,7 @@
 .bz .ucret .label i{font-style:normal;font-family:var(--display);font-size:1.2rem;opacity:.9;line-height:1}
 .bz a.ucret:active{transform:scale(.99)}
 .bz .ucret strong{display:block;font-family:var(--display);font-weight:600;font-size:clamp(1.9rem,7vw,2.4rem);letter-spacing:-.02em;line-height:1.1}
+.bz .ucret .not{margin-top:2px}
 .bz .ucret .alt{color:var(--hl-ink);opacity:.75;margin-top:6px;font-size:var(--t-kucuk)}
 .bz .imza{margin-top:28px;font-family:var(--display);color:var(--ink-2)}
 .bz .bos{color:var(--muted)}
@@ -94,6 +95,7 @@
         <p class="label">Tahmini ücret <i>→</i></p>
         <strong id="bz-tutar"></strong>
         <p class="alt" id="bz-dokum"></p>
+        <p class="alt not" id="bz-not" hidden></p>
       </a>
       <p class="imza">Görüşmek üzere,<br>Mehmet Cihat Keleş</p>
     </section>
@@ -148,14 +150,21 @@
     return A.d+' '+AY[A.m]+' – '+B.d+' '+AY[B.m];
   }
   function geceSay(a,b){return Math.round((new Date(b+'T12:00')-new Date(a+'T12:00'))/864e5)}
+  /* aileler çoğunlukla 15.00'ten sonra alır: tahmin akşam alışa göre (gündüz misafirliği dahil) */
   function hesap(a,b,n){
-    var g=geceSay(a,b), per=g>0?g*F.gece:F.gunduz, sub=per*n, tot=sub, satir=[];
-    satir.push(g>0?g+' gece':'Gündüz misafirliği');
+    function top(aksam){
+      var g=geceSay(a,b), per=g>0?g*F.gece+(aksam?F.gunduz:0):F.gunduz, sub=per*n, tot=sub;
+      var kd=F.kopek(n), gd=g>0?F.gecelik(g):0;
+      if(kd) tot-=Math.round(sub*kd/100);
+      if(gd) tot-=Math.round(sub*gd/100);
+      return {g:g,tot:tot,kd:kd,gd:gd};
+    }
+    var r=top(true), sabah=top(false), satir=[];
+    satir.push(r.g>0?r.g+' gece + akşam alış':'Gündüz misafirliği');
     if(n>1) satir.push(n+' köpek');
-    var kd=F.kopek(n), gd=g>0?F.gecelik(g):0;
-    if(kd){tot-=Math.round(sub*kd/100); satir.push(n>=3?'3+ köpek indirimi %'+kd:'2 köpek indirimi %'+kd);}
-    if(gd){tot-=Math.round(sub*gd/100); satir.push((g>=10?'10':'5')+' gece ve üzeri indirimi %'+gd);}
-    return {g:g,tutar:tot,satir:satir};
+    if(r.kd) satir.push(n>=3?'3+ köpek indirimi %'+r.kd:'2 köpek indirimi %'+r.kd);
+    if(r.gd) satir.push((r.g>=10?'10':'5')+' gece ve üzeri indirimi %'+r.gd);
+    return {g:r.g,tutar:r.tot,satir:satir,fark:r.g>0?r.tot-sabah.tot:0};
   }
   function buyuk(s){return s.trim().split(/\s+/).map(function(k){return k?k.charAt(0).toLocaleUpperCase('tr-TR')+k.slice(1):k}).join(' ')}
   /* "8–16 Aralık'ta": aralık her zaman ay adıyla biter */
@@ -192,9 +201,10 @@
   document.getElementById('bz-sure').textContent=r.g>0?r.g+' gece':'Gündüz misafirliği';
   document.getElementById('bz-tutar').textContent=tl(r.tutar);
   document.getElementById('bz-dokum').textContent=r.satir.join(' · ');
+  if(r.fark){ var nt=document.getElementById('bz-not'); nt.textContent='Alış saatinize göre bu tutar değişebilir.'; nt.hidden=false; }
   document.title=kopekAd+' ikinci evinde · Mehmet Cihat Keleş';
   /* kart ödeme sayfasına götürür: aynı tarihler, köpek sayısı ve ad dolu gelir (bilgiler gizli) */
-  var oq='giris='+a+'&cikis='+b+(n>1?'&kopek='+n:'')+(kime?'&ad='+encodeURIComponent(kime).replace(/%20/g,'+'):'');
+  var oq='giris='+a+'&cikis='+b+(a!==b?'&saat=19:00':'')+(n>1?'&kopek='+n:'')+(kime?'&ad='+encodeURIComponent(kime).replace(/%20/g,'+'):'');
   document.getElementById('bz-ucret').href='/odeme/#'+btoa(unescape(encodeURIComponent(oq))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
 
   function hazirla(){
