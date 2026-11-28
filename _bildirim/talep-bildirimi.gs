@@ -401,7 +401,7 @@ function bildirim(t, tabloUrl) {
    Site bunu ayrı bir dağıtımla okur: Dağıt → Yeni dağıtım → Web uygulaması, Çalıştıran: ben, Erişim: Herkes.
    (Takvime işle bağlantıları imza ister; herkese açık dağıtım onları açmaz.) */
 function misafirlerJson() {
-  var on = CacheService.getScriptCache(), k = 'misafirler2-' + Utilities.formatDate(new Date(), 'Europe/Istanbul', 'yyyyMMdd');
+  var on = CacheService.getScriptCache(), k = 'misafirler3-' + Utilities.formatDate(new Date(), 'Europe/Istanbul', 'yyyyMMdd');
   var veri = on.get(k);
   if (!veri) {
     veri = JSON.stringify(bugunkuMisafirler());
@@ -427,7 +427,24 @@ function bugunkuMisafirler() {
     var kalan = gun(son) - 1;   // bugünden sonra kaç gün daha (0: bugün gidiyor)
     var tek = gun(son) - gun(bas) <= 1;   // tek günlük kayıt: gündüz misafirliği
     var tur = ((parca[1] || '').indexOf('gündüz') === 0 || tek) ? 'gunduz' : 'konaklama';
-    liste.push({ ad: ad, tur: tur, kalan: kalan, yeni: gun(bas) === 0 });
+    // açıklamadaki "Renk: …" ve "Boy: …" satırları (yalnız bu iki bilgi siteye çıkar)
+    var acik = ev.getDescription() || '', kayit = { ad: ad, tur: tur, kalan: kalan, yeni: gun(bas) === 0 };
+    var r = acik.match(/(?:^|\n|<br>)\s*renk\s*:\s*([^\n<]+)/i), b = acik.match(/(?:^|\n|<br>)\s*boy\s*:\s*([^\n<]+)/i);
+    if (r) kayit.renk = renkAdi(r[1]);
+    if (b) kayit.boy = boyAdi(b[1]);
+    liste.push(kayit);
   });
   return { tarih: Utilities.formatDate(new Date(), 'Europe/Istanbul', 'yyyy-MM-dd'), misafirler: liste };
 }
+
+function sade(x) { return String(x).toLocaleLowerCase('tr').replace(/[çğışöü]/g, function (c) { return { 'ç': 'c', 'ğ': 'g', 'ı': 'i', 'ş': 's', 'ö': 'o', 'ü': 'u' }[c]; }).replace(/\s+/g, ' ').trim(); }
+function renkAdi(x) {
+  var t = sade(x);
+  if (/beyaz/.test(t) && /siyah/.test(t)) return 'beyaz-siyah';
+  var l = ['kahverengi', 'beyaz', 'siyah', 'gri', 'sari', 'krem', 'kizil'];
+  for (var i = 0; i < l.length; i++) if (t.indexOf(l[i]) > -1) return l[i];
+  if (/kahve/.test(t)) return 'kahverengi';
+  if (/altin|golden/.test(t)) return 'sari';
+  return undefined;
+}
+function boyAdi(x) { var t = sade(x); return /kucuk|mini|minik/.test(t) ? 'kucuk' : /buyuk|iri/.test(t) ? 'buyuk' : /orta/.test(t) ? 'orta' : undefined; }

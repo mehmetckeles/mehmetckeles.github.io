@@ -20,8 +20,8 @@
   function sec(ad){ if(secim[ad]) return secim[ad]; var h=sira(ad), k=Math.floor(h/7)%3;
     for(var i=0;i<RENK.length;i++){ var r=(h+i)%RENK.length; if(!dolu[r]){ dolu[r]=1; return secim[ad]=[r,k]; } }
     return secim[ad]=[h%RENK.length,k]; }
-  function yuz(ad){
-    var bilgi=KOPEK[ad.toLocaleLowerCase('tr-TR')]||{}, s=sec(ad), kulak=s[1];
+  function yuz(ad,x){   /* x: takvimden gelen renk/boy (varsa tablodan önce gelir) */
+    var tablo=KOPEK[ad.toLocaleLowerCase('tr-TR')]||{}, bilgi={renk:(x&&x.renk)||tablo.renk, boy:(x&&x.boy)||tablo.boy}, s=sec(ad), kulak=s[1];
     var r=(bilgi.renk&&RENKLER[bilgi.renk])||RENK[s[0]], leke=!!r[2], koyu=(r[0]==='#2B2522');
     var boy=bilgi.boy==='kucuk'?' kucuk':bilgi.boy==='buyuk'?' buyuk':'';
     var g=koyu?'#F6F1E7':'#1A1512';
@@ -52,18 +52,18 @@
     [].forEach.call(document.querySelectorAll('[data-tarih]'),function(e){ e.textContent=tarih(v.tarih); });
     if(rozet){
       rozet.querySelector('[data-sayi]').textContent=m.length;
-      rozet.querySelector('[data-yuzler]').innerHTML=m.slice(0,5).map(function(x){return '<span class="mk">'+yuz(x.ad)+'<span>'+esc(x.ad)+'</span></span>'}).join('');
+      rozet.querySelector('[data-yuzler]').innerHTML=m.slice(0,5).map(function(x){return '<span class="mk">'+yuz(x.ad,x)+'<span>'+esc(x.ad)+'</span></span>'}).join('');
       rozet.hidden=false;
     }
     if(liste){
       liste.querySelector('[data-sayi]').textContent=m.length;
       liste.querySelector('ul').innerHTML=m.map(function(x){
-        return '<li>'+yuz(x.ad)+'<span class="ad">'+esc(x.ad)+'</span><span class="ne">'+esc(ne(x))+'</span></li>';
+        return '<li>'+yuz(x.ad,x)+'<span class="ad">'+esc(x.ad)+'</span><span class="ne">'+esc(ne(x))+'</span></li>';
       }).join('');
       liste.hidden=false;
     }
   }
-  var k='mck-misafir2', simdi=Date.now(), bugun=new Date().toDateString();
+  var k='mck-misafir3', simdi=Date.now(), bugun=new Date().toDateString();
   try{ var o=JSON.parse(sessionStorage.getItem(k)||'null'); if(o&&o.gun===bugun&&simdi-o.t<600000){ ciz(o.v); return; } }catch(e){}
   fetch(U).then(function(r){return r.json()}).then(function(v){
     try{ sessionStorage.setItem(k,JSON.stringify({t:simdi,gun:bugun,v:v})); }catch(e){}
