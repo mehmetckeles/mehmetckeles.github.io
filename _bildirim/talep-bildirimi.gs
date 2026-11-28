@@ -401,7 +401,7 @@ function bildirim(t, tabloUrl) {
    Site bunu ayrı bir dağıtımla okur: Dağıt → Yeni dağıtım → Web uygulaması, Çalıştıran: ben, Erişim: Herkes.
    (Takvime işle bağlantıları imza ister; herkese açık dağıtım onları açmaz.) */
 function misafirlerJson() {
-  var on = CacheService.getScriptCache(), k = 'misafirler-' + Utilities.formatDate(new Date(), 'Europe/Istanbul', 'yyyyMMdd');
+  var on = CacheService.getScriptCache(), k = 'misafirler2-' + Utilities.formatDate(new Date(), 'Europe/Istanbul', 'yyyyMMdd');
   var veri = on.get(k);
   if (!veri) {
     veri = JSON.stringify(bugunkuMisafirler());
@@ -425,7 +425,8 @@ function bugunkuMisafirler() {
     var bas = ev.getAllDayStartDate(), son = ev.getAllDayEndDate();   // son: ertesi gün (hariç)
     var gun = function (d) { return Math.round((new Date(Utilities.formatDate(d, 'Europe/Istanbul', 'yyyy-MM-dd') + 'T12:00:00') - bugun) / 864e5); };
     var kalan = gun(son) - 1;   // bugünden sonra kaç gün daha (0: bugün gidiyor)
-    var tur = (parca[1] || '').indexOf('gündüz') === 0 ? 'gunduz' : 'konaklama';
+    var tek = gun(son) - gun(bas) <= 1;   // tek günlük kayıt: gündüz misafirliği
+    var tur = ((parca[1] || '').indexOf('gündüz') === 0 || tek) ? 'gunduz' : 'konaklama';
     liste.push({ ad: ad, tur: tur, kalan: kalan, yeni: gun(bas) === 0 });
   });
   return { tarih: Utilities.formatDate(new Date(), 'Europe/Istanbul', 'yyyy-MM-dd'), misafirler: liste };

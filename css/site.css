@@ -219,3 +219,31 @@ nav.main a[aria-current]{color:var(--ink);border-bottom-color:var(--ink)}
 .page-hero .lead{max-width:38rem;margin-top:24px;font-size:var(--t-giris);line-height:1.7;color:var(--ink-2)}
 .school .peek{position:relative}
 .school .peek::after{content:"";position:absolute;left:0;right:0;bottom:0;height:38%;background:linear-gradient(to bottom,transparent,var(--fade,var(--paper)));pointer-events:none}
+
+/* bugünkü misafirler (js/misafir.js) */
+.misafir-rozet,.m-kart{position:relative;overflow:hidden;display:grid;background:#BC002D;color:#fff;border-radius:22px;text-decoration:none;isolation:isolate}
+.m-fon{position:absolute;inset:0;width:100%;height:100%;z-index:-1}
+.misafir-rozet{grid-template-columns:1fr auto;grid-template-areas:"ust ust" "baslik ok" "yuzler yuzler";gap:2px 12px;padding:16px 18px 14px;margin-bottom:14px}
+.m-ust{grid-area:ust;display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:var(--t-etiket);letter-spacing:.14em;text-transform:uppercase;opacity:.85;margin:0}
+.m-baslik{grid-area:baslik;font-family:var(--display);font-size:clamp(1.25rem,5.2vw,1.6rem);font-weight:300;line-height:1.2}
+.m-baslik b,.m-kart h2 b{font-weight:600;font-size:1.35em;vertical-align:-.04em}
+.m-baslik em,.m-kart h2 em{font-style:normal;font-weight:600;background:#F3FF53;color:#151515;padding:0 .14em;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.m-ok{grid-area:ok;align-self:center;font-family:var(--display);font-size:1.5rem;width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.16);display:grid;place-items:center;transition:transform .2s}
+.misafir-rozet:active .m-ok{transform:translateX(3px)}
+.m-yuzler{grid-area:yuzler;display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:12px}
+.m-yuzler .mk{display:flex;align-items:center;gap:6px;font-family:var(--display);font-size:var(--t-kucuk)}
+.yuz{width:36px;height:36px;flex:none;filter:drop-shadow(0 2px 0 rgba(0,0,0,.18))}
+.m-yuzler .mk:nth-child(odd) .yuz{transform:rotate(-6deg)}.m-yuzler .mk:nth-child(even) .yuz{transform:rotate(5deg)}
+.misafir-rozet[hidden],.misafirler[hidden]{display:none}
+.nokta{display:inline-block;width:8px;height:8px;border-radius:50%;background:#fff;box-shadow:0 0 0 3px rgba(255,255,255,.25);animation:nabiz 2.4s ease-in-out infinite}
+@keyframes nabiz{50%{opacity:.4}}
+@media (prefers-reduced-motion:reduce){.nokta{animation:none}}
+.misafirler{padding:0 0 clamp(36px,6vw,64px)}
+.m-kart{display:block;padding:20px 20px 10px}
+.m-kart h2{font-family:var(--display);font-weight:300;font-size:clamp(1.5rem,6.4vw,2rem);line-height:1.15;margin:6px 0 14px;color:#fff}
+.m-kart ul{list-style:none;margin:0;padding:0}
+.m-kart li{display:grid;grid-template-columns:auto 1fr;grid-template-areas:"yuz ad" "yuz ne";column-gap:14px;align-items:center;padding:12px 0;border-top:1px solid rgba(255,255,255,.22)}
+.m-kart li .yuz{grid-area:yuz;width:54px;height:54px}
+.m-kart li:nth-child(odd) .yuz{transform:rotate(-5deg)}.m-kart li:nth-child(even) .yuz{transform:rotate(5deg)}
+.m-kart .ad{grid-area:ad;font-family:var(--display);font-weight:600;font-size:var(--t-metin)}
+.m-kart .ne{grid-area:ne;font-size:var(--t-kucuk);opacity:.85}
