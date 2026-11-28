@@ -79,7 +79,7 @@ Konaklama sayfasındaki "Bugün evde" listesinde köpeğin adına dokununca kaç
 Geçmiş (Ocak 2022 – Ekim 2026, "İkinci Ev" ve "Cihat Keleş" takvimlerinden temizlenmiş) herkese açık depoda değil,
 "Site talepleri" tablosunun "Misafir geçmişi" sekmesinde durur; "Takma adlar" sekmesi farklı yazımları birleştirir.
 1 Kasım 2026'dan sonrası "Misafirler" takviminden kendiliğinden sayılır. Aynı adlı iki köpek için takvim açıklamasına
-"Kimlik: maya-jack" gibi bir satır yazılır. Ayrıntılar ve kararlar: Çalışma merkezi belgesi.
+"Kimlik: maya-jack" gibi bir satır yazılır. Ayrıntılar, kararlar ve adı yazılmamış kalışlar: "Misafir Geçmişi · Arşiv" belgesi (https://claude.ai/artifact/XDSmYV5bk2YHKYfc84W55L). Sitenin genel işleri: "mehmetcihatkeles.com · Çalışma merkezi" (https://claude.ai/artifact/9JZdm4o1Er1687dZLQUuqD).
 
 ### Köpek profili (/kopek/#kimlik)
 Konaklama sayfasındaki listede bir köpeğin adına ilk dokunuş geliş sayısını, ikinci dokunuş profilini açar; davet yazısı yoktur.
