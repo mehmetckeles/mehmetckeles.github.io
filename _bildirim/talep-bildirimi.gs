@@ -208,6 +208,7 @@ function gunTarihi(d) { return new Date(d.y, d.a - 1, d.g); }
 
 /* "Takvime işle" bağlantısı: yalnızca Mehmet'in hesabıyla açılır (web uygulaması, erişim: yalnızca ben). */
 function doGet(e) {
+  if (e.parameter.misafir) return misafirlerJson();
   var satir = parseInt(e.parameter.s, 10);
   if (!satir || e.parameter.k !== imza(satir)) return sayfaYaz('Bağlantı geçersiz', 'Bu bağlantı tanınmadı.');
   var sayfa = SpreadsheetApp.getActive().getSheets()[0];
@@ -390,4 +391,42 @@ function bildirim(t, tabloUrl) {
     '</div>';
 
   return { konu: konu, duz: duz, html: html, metin: metin, link: link };
+}
+
+
+/* ---------- Sitedeki "Bugünkü misafirlerimiz" ----------
+   "Misafirler" takviminden bugünün köpeklerini okur; yalnızca köpeğin adı ve kaç gün kalacağı çıkar
+   (aile adı, telefon, tarih çıkmaz). Başlığı "İPTAL" ile başlayan ya da içinde "gizli" geçen kayıtlar görünmez.
+   Aynı köpek iki kez yazılmışsa bir kez sayılır. 10 dakika önbellekte tutulur.
+   Site bunu ayrı bir dağıtımla okur: Dağıt → Yeni dağıtım → Web uygulaması, Çalıştıran: ben, Erişim: Herkes.
+   (Takvime işle bağlantıları imza ister; herkese açık dağıtım onları açmaz.) */
+function misafirlerJson() {
+  var on = CacheService.getScriptCache(), k = 'misafirler-' + Utilities.formatDate(new Date(), 'Europe/Istanbul', 'yyyyMMdd');
+  var veri = on.get(k);
+  if (!veri) {
+    veri = JSON.stringify(bugunkuMisafirler());
+    on.put(k, veri, 600);
+  }
+  return ContentService.createTextOutput(veri).setMimeType(ContentService.MimeType.JSON);
+}
+
+function bugunkuMisafirler() {
+  var c = CalendarApp.getCalendarsByName(TAKVIM_MISAFIR)[0];
+  if (!c) return { misafirler: [] };
+  var bugun = new Date(Utilities.formatDate(new Date(), 'Europe/Istanbul', 'yyyy-MM-dd') + 'T12:00:00');
+  var gorulen = {}, liste = [];
+  c.getEventsForDay(bugun).forEach(function (ev) {
+    var baslik = ev.getTitle() || '';
+    if (/^\s*İPTAL/i.test(baslik) || /gizli/i.test(baslik) || !ev.isAllDayEvent()) return;
+    var parca = baslik.split('·').map(function (x) { return x.trim(); });
+    var ad = parca[0];
+    if (!ad || gorulen[ad.toLocaleLowerCase()]) return;
+    gorulen[ad.toLocaleLowerCase()] = 1;
+    var bas = ev.getAllDayStartDate(), son = ev.getAllDayEndDate();   // son: ertesi gün (hariç)
+    var gun = function (d) { return Math.round((new Date(Utilities.formatDate(d, 'Europe/Istanbul', 'yyyy-MM-dd') + 'T12:00:00') - bugun) / 864e5); };
+    var kalan = gun(son) - 1;   // bugünden sonra kaç gün daha (0: bugün gidiyor)
+    var tur = (parca[1] || '').indexOf('gündüz') === 0 ? 'gunduz' : 'konaklama';
+    liste.push({ ad: ad, tur: tur, kalan: kalan, yeni: gun(bas) === 0 });
+  });
+  return { tarih: Utilities.formatDate(new Date(), 'Europe/Istanbul', 'yyyy-MM-dd'), misafirler: liste };
 }
