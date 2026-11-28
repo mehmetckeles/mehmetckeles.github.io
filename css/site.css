@@ -243,7 +243,10 @@ nav.main a[aria-current]{color:var(--ink);border-bottom-color:var(--ink)}
 .m-kart h2{font-family:var(--display);font-weight:300;font-size:clamp(1.5rem,6.4vw,2rem);line-height:1.15;margin:6px 0 14px;color:#fff}
 .m-kart ul{list-style:none;margin:0;padding:0}
 .m-kart li{display:grid;grid-template-columns:auto 1fr;grid-template-areas:"yuz ad" "yuz ne";column-gap:14px;align-items:center;padding:12px 0;border-top:1px solid rgba(255,255,255,.22)}
-.m-kart li .yuz{grid-area:yuz;width:54px;height:54px}
+.m-kart li .yuz{grid-area:yuz;width:54px;height:54px;justify-self:center}
+.m-kart li .yuz.kucuk{width:40px;height:40px}.m-kart li .yuz.buyuk{width:70px;height:70px}
+.m-kart li{grid-template-columns:70px 1fr}
 .m-kart li:nth-child(odd) .yuz{transform:rotate(-5deg)}.m-kart li:nth-child(even) .yuz{transform:rotate(5deg)}
 .m-kart .ad{grid-area:ad;font-family:var(--display);font-weight:600;font-size:var(--t-metin)}
 .m-kart .ne{grid-area:ne;font-size:var(--t-kucuk);opacity:.85}
+.m-yuzler .yuz.kucuk{width:27px;height:27px}.m-yuzler .yuz.buyuk{width:46px;height:46px}

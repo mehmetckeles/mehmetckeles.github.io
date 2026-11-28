@@ -4,6 +4,15 @@
   var U='https://script.google.com/macros/s/AKfycbwKtB63l09gq7bLoSmVAFuQLSMHf54G9StF38-EkFIHp2IwLJDZESgdLMna8PoAlIDb/exec?misafir=1';
   var rozet=document.querySelector('[data-misafir-rozet]'), liste=document.querySelector('[data-misafir-liste]');
   if(!rozet&&!liste) return;
+  /* Mehmet'in söylediği görünüşler (ad küçük harfle). renk: aşağıdaki RENKLER'den biri; boy: kucuk | orta | buyuk.
+     Burada olmayan köpek rastgele (adından) bir renk ve orta boy alır. */
+  var KOPEK={
+    'kaju':{renk:'kahverengi',boy:'orta'},
+    'dobi':{renk:'beyaz-siyah',boy:'orta'}, 'dobby':{renk:'beyaz-siyah',boy:'orta'},
+    'cedric':{renk:'beyaz',boy:'orta'}
+  };
+  var RENKLER={ 'kahverengi':['#8A5A2E','#5C3818'], 'beyaz':['#FBF8F2','#E2D9CB'], 'beyaz-siyah':['#FBF8F2','#1E1A18',1],
+    'siyah':['#2B2522','#151110'], 'gri':['#9A8F86','#5E554F'], 'sari':['#E0B25A','#A97A26'], 'krem':['#F1E3C8','#C9A877'], 'kizil':['#B9643A','#7A3A1C'] };
   var RENK=[['#C8873E','#8A5520'],['#F1E3C8','#C9A877'],['#2B2522','#151110'],['#9A8F86','#5E554F'],['#E0B25A','#A97A26'],['#B9643A','#7A3A1C'],['#FFFFFF','#D9D2C7']];
   function sira(ad){var h=0;for(var i=0;i<ad.length;i++)h=(h*31+ad.charCodeAt(i))>>>0;return h}
   /* aynı gün iki köpek aynı yüzü almasın: renk + kulak birleşimi doluysa sıradakine geç */
@@ -12,15 +21,18 @@
     for(var i=0;i<RENK.length;i++){ var r=(h+i)%RENK.length; if(!dolu[r]){ dolu[r]=1; return secim[ad]=[r,k]; } }
     return secim[ad]=[h%RENK.length,k]; }
   function yuz(ad){
-    var s=sec(ad), r=RENK[s[0]], kulak=s[1], koyu=(r[0]==='#2B2522');
+    var bilgi=KOPEK[ad.toLocaleLowerCase('tr-TR')]||{}, s=sec(ad), kulak=s[1];
+    var r=(bilgi.renk&&RENKLER[bilgi.renk])||RENK[s[0]], leke=!!r[2], koyu=(r[0]==='#2B2522');
+    var boy=bilgi.boy==='kucuk'?' kucuk':bilgi.boy==='buyuk'?' buyuk':'';
     var g=koyu?'#F6F1E7':'#1A1512';
     var k = kulak===0 ? '<ellipse cx="13" cy="25" rx="7" ry="13" transform="rotate(18 13 25)" fill="'+r[1]+'"/><ellipse cx="51" cy="25" rx="7" ry="13" transform="rotate(-18 51 25)" fill="'+r[1]+'"/>'
           : kulak===1 ? '<path d="M12 22 L16 4 L28 16Z" fill="'+r[1]+'"/><path d="M52 22 L48 4 L36 16Z" fill="'+r[1]+'"/>'
           : '<path d="M10 18 Q12 6 24 12 Q18 22 14 30Z" fill="'+r[1]+'"/><path d="M54 18 Q52 6 40 12 Q46 22 50 30Z" fill="'+r[1]+'"/>';
-    return '<svg class="yuz" viewBox="0 0 64 64" aria-hidden="true">'+k
-      +'<circle cx="32" cy="34" r="20" fill="'+r[0]+'"/>'
-      +'<ellipse cx="32" cy="43" rx="10" ry="8" fill="'+(koyu?'#4A403A':'#FFF8EC')+'" opacity=".9"/>'
-      +'<circle cx="25" cy="32" r="2.6" fill="'+g+'"/><circle cx="39" cy="32" r="2.6" fill="'+g+'"/>'
+    var lekeSvg = leke ? '<ellipse cx="38.5" cy="30" rx="7.5" ry="6.5" fill="'+r[1]+'" transform="rotate(-15 38.5 30)"/><path d="M18 22 Q24 15 30 19 Q25 23 22 29Z" fill="'+r[1]+'"/>' : '';
+    return '<svg class="yuz'+boy+'" viewBox="0 0 64 64" aria-hidden="true">'+k
+      +'<circle cx="32" cy="34" r="20" fill="'+r[0]+'"/>'+lekeSvg
+      +'<ellipse cx="32" cy="43" rx="10" ry="8" fill="'+(koyu?'#4A403A':(r[0]==='#FBF8F2'?'#EFE6D8':'#FFF8EC'))+'" opacity=".9"/>'
+      +'<circle cx="25" cy="32" r="2.6" fill="'+g+'"/>'+(leke?'<circle cx="39" cy="32" r="3.4" fill="#FBF8F2"/>':'')+'<circle cx="39" cy="32" r="2.6" fill="'+g+'"/>'
       +'<circle cx="25.8" cy="31.2" r=".8" fill="#fff"/><circle cx="39.8" cy="31.2" r=".8" fill="#fff"/>'
       +'<ellipse cx="32" cy="39.5" rx="3.6" ry="2.6" fill="#1A1512"/>'
       +'<path d="M32 42 Q32 45 29 46 M32 42 Q32 45 35 46" stroke="#1A1512" stroke-width="1.2" fill="none" stroke-linecap="round"/>'
