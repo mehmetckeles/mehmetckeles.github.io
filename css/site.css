@@ -255,5 +255,4 @@ nav.main a[aria-current]{color:var(--ink);border-bottom-color:var(--ink)}
 .m-kart li.acilir:focus-visible{outline:2px solid #F3FF53;outline-offset:2px;border-radius:6px}
 .m-kart .gelis{grid-area:gelis;justify-self:start;margin-top:6px;background:#F3FF53;color:#151515;font-family:var(--display);font-weight:600;font-size:var(--t-kucuk);white-space:nowrap;padding:3px 10px;border-radius:99px}
 .m-kart .gelis[hidden]{display:none}
-.m-kart .profil-ok{opacity:.7;font-weight:400}
 .m-yuzler .yuz.kucuk{width:27px;height:27px}.m-yuzler .yuz.buyuk{width:46px;height:46px}

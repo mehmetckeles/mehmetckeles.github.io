@@ -209,7 +209,7 @@ function gunTarihi(d) { return new Date(d.y, d.a - 1, d.g); }
 /* "Takvime işle" bağlantısı: yalnızca Mehmet'in hesabıyla açılır (web uygulaması, erişim: yalnızca ben). */
 function doGet(e) {
   if (e.parameter.misafir) return misafirlerJson();
-  if (e.parameter.profil) return profilSayfasi(String(e.parameter.profil));
+  if (e.parameter.profil) return profilJson(String(e.parameter.profil));
   var satir = parseInt(e.parameter.s, 10);
   if (!satir || e.parameter.k !== imza(satir)) return sayfaYaz('Bağlantı geçersiz', 'Bu bağlantı tanınmadı.');
   var sayfa = SpreadsheetApp.getActive().getSheets()[0];
@@ -498,9 +498,9 @@ function gelisSayilari(takvim, liste) {
   });
 }
 
-/* ---------- Köpek profili (yalnızca Mehmet) ----------
-   ?profil=kaju — "Takvime işle" dağıtımının adresiyle açılır (Erişim: yalnızca ben). Herkese açık dağıtımda
-   da aynı kod çalıştığı için ayrıca oturum denetlenir: sayfayı açan kişi betiğin sahibi değilse hiçbir şey gösterilmez.
+/* ---------- Köpek profili ----------
+   ?profil=kaju — sitedeki /kopek/ sayfası bunu herkese açık dağıtımdan okur. Çıkan: köpeğin adı, bugüne kadarki
+   gelişlerin tarihi ve kaç gece sürdüğü, toplamlar. Aile adı, telefon ve ileri tarihli kayıtlar çıkmaz.
    Geçmiş: "Misafir geçmişi" (Tarihler + Geceler sütunları); 1 Kasım 2026'dan sonrası "Misafirler" takvimi. */
 function profilVerisi(istek) {
   var ss = SpreadsheetApp.getActive(), takma = {}, k = sade(istek);
@@ -537,42 +537,23 @@ function profilVerisi(istek) {
   return { kimlik: k, ad: ad || istek, liste: liste };
 }
 
-function profilSayfasi(istek) {
-  var aktif = Session.getActiveUser().getEmail(), sahip = Session.getEffectiveUser().getEmail();
-  if (!aktif || aktif !== sahip) return sayfaYaz('Bu sayfa kapalı', 'Köpek profilleri şimdilik yalnızca Mehmet içindir.');
-  var v = profilVerisi(istek), bugun = Utilities.formatDate(new Date(), 'Europe/Istanbul', 'yyyy-MM-dd');
-  var gecmis = v.liste.filter(function (x) { return x.gun <= bugun; }), ileri = v.liste.filter(function (x) { return x.gun > bugun; });
-  var kon = gecmis.filter(function (x) { return x.tur === 'konaklama'; }), gun = gecmis.length - kon.length;
-  var gece = kon.reduce(function (a, x) { return a + x.gece; }, 0);
-  var uzun = kon.reduce(function (a, x) { return x.gece > a.gece ? x : a; }, { gece: 0 });
-  var AY = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'];
-  var tr = function (d) { var p = d.split('-'); return +p[2] + ' ' + AY[+p[1] - 1] + ' ' + p[0]; };
-  var kisa = function (d) { var p = d.split('-'); return +p[2] + ' ' + AY[+p[1] - 1]; };
-  var satir = function (x) { return '<li><span>' + kisa(x.gun) + '</span><b>' + (x.tur === 'gunduz' ? 'gündüz' : x.gece + ' gece') + '</b></li>'; };
-  var yillar = {}; gecmis.forEach(function (x) { (yillar[x.gun.slice(0, 4)] = yillar[x.gun.slice(0, 4)] || []).push(x); });
-  var yilHtml = Object.keys(yillar).sort().reverse().map(function (y) {
-    return '<h3>' + y + ' <small>' + yillar[y].length + ' geliş</small></h3><ul>' + yillar[y].slice().reverse().map(satir).join('') + '</ul>';
-  }).join('');
-  var kutu = function (sayi, yazi) { return '<div class="k"><b>' + sayi + '</b><span>' + yazi + '</span></div>'; };
-  var govde = !gecmis.length && !ileri.length
-    ? '<p class="bos">Bu adla bir kayıt bulamadım.</p>'
-    : '<div class="ust"><p class="ad">' + esc(v.ad) + '</p><p class="alt">' + (gecmis.length ? 'İlk kez ' + tr(gecmis[0].gun) + ' · son ' + tr(gecmis[gecmis.length - 1].gun) : 'Henüz gelmedi') + '</p></div>'
-      + '<div class="kutular">' + kutu(gecmis.length, 'geliş') + kutu(gece, 'gece') + kutu(kon.length, 'konaklama') + kutu(gun, 'gündüz') + '</div>'
-      + (uzun.gece ? '<p class="not">En uzun kalışı ' + uzun.gece + ' gece (' + tr(uzun.gun) + ').</p>' : '')
-      + (ileri.length ? '<h2>Sıradaki</h2><ul>' + ileri.map(satir).join('') + '</ul>' : '')
-      + '<h2>Gelişleri</h2>' + yilHtml;
-  var html = '<!DOCTYPE html><html lang="tr"><head><meta charset="utf-8"><title>' + esc(v.ad) + '</title><style>'
-    + 'body{margin:0;font-family:-apple-system,Segoe UI,Roboto,sans-serif;background:#F6F5F0;color:#151515}'
-    + '.s{max-width:560px;margin:0 auto;padding:20px 18px 48px}'
-    + '.ust{background:#BC002D;color:#fff;border-radius:22px;padding:22px 22px 20px}'
-    + '.ad{font-size:40px;font-weight:700;margin:0;letter-spacing:-.02em}.alt{margin:6px 0 0;opacity:.85;font-size:15px}'
-    + '.kutular{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}'
-    + '.k{background:#fff;border-radius:16px;padding:12px 8px;text-align:center}.k b{display:block;font-size:26px}.k span{font-size:13px;color:#666}'
-    + '.not{background:#F3FF53;border-radius:12px;padding:10px 14px;font-size:15px;margin:0 0 8px}'
-    + 'h2{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#888;margin:28px 0 6px}'
-    + 'h3{font-size:18px;margin:18px 0 4px}h3 small{font-size:13px;color:#888;font-weight:400}'
-    + 'ul{list-style:none;margin:0;padding:0;background:#fff;border-radius:16px}li{display:flex;justify-content:space-between;padding:11px 16px;border-top:1px solid #eee;font-size:15px}li:first-child{border-top:0}li b{font-weight:600}'
-    + '.bos{padding:40px 0;text-align:center;color:#666}.alt2{margin-top:28px;font-size:13px;color:#999;text-align:center}'
-    + '</style></head><body><div class="s">' + govde + '<p class="alt2">Bu sayfayı yalnızca sen görüyorsun. 2022 kayıtlarında gece sayısı yaklaşık.</p></div></body></html>';
-  return HtmlService.createHtmlOutput(html).setTitle(v.ad).addMetaTag('viewport', 'width=device-width, initial-scale=1');
+function profilJson(istek) {
+  var on = CacheService.getScriptCache(), bugun = Utilities.formatDate(new Date(), 'Europe/Istanbul', 'yyyy-MM-dd');
+  var anahtar = 'profil1-' + sade(istek).replace(/[^a-z0-9-]/g, '').slice(0, 40) + '-' + bugun, veri = on.get(anahtar);
+  if (!veri) {
+    var v = profilVerisi(istek);
+    // yalnızca bugüne kadarki gelişler: ileri tarihli kayıtlar herkese açık sayfada görünmez
+    var l = v.liste.filter(function (x) { return x.gun <= bugun; });
+    var kon = l.filter(function (x) { return x.tur === 'konaklama'; });
+    var uzun = kon.reduce(function (a, x) { return x.gece > a.gece ? x : a; }, { gece: 0 });
+    veri = JSON.stringify({
+      ad: v.ad, kimlik: v.kimlik, kayitBaslangic: '2022-01', bugun: bugun,
+      gelis: l.length, konaklama: kon.length, gunduz: l.length - kon.length,
+      gece: kon.reduce(function (a, x) { return a + x.gece; }, 0),
+      enUzun: uzun.gece ? { gun: uzun.gun, gece: uzun.gece } : null,
+      liste: l
+    });
+    on.put(anahtar, veri, 600);
+  }
+  return ContentService.createTextOutput(veri).setMimeType(ContentService.MimeType.JSON);
 }

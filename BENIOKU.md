@@ -81,8 +81,8 @@ Geçmiş (Ocak 2022 – Ekim 2026, "İkinci Ev" ve "Cihat Keleş" takvimlerinden
 1 Kasım 2026'dan sonrası "Misafirler" takviminden kendiliğinden sayılır. Aynı adlı iki köpek için takvim açıklamasına
 "Kimlik: maya-jack" gibi bir satır yazılır. Ayrıntılar ve kararlar: Çalışma merkezi belgesi.
 
-### Köpek profili (yalnızca Mehmet)
-Listede bir köpeğin adına ikinci kez dokununca profil açılır: kaç kez geldiği, toplam gece, konaklama/gündüz, en uzun kalış, yıllara göre gelişleri, sıradaki kayıtlar.
-Bu yalnızca panel sayfasını açmış tarayıcıda görünür (panel, tarayıcıya "mck-sahip" işareti koyar). Profil "Takvime işle" dağıtımından
-(?profil=kaju) gelir; o dağıtım yalnızca Mehmet'in Google oturumuyla açılır, betik ayrıca açan kişinin sahibi olduğunu denetler.
-Gece sayıları "Misafir geçmişi"nin G sütunundan (Tarihlerle aynı sırada) gelir.
+### Köpek profili (/kopek/#kimlik)
+Konaklama sayfasındaki listede bir köpeğin adına ilk dokunuş geliş sayısını, ikinci dokunuş profilini açar; davet yazısı yoktur.
+Profil herkese açıktır: ad, bugüne kadarki gelişlerin tarihi ve gece sayısı, toplamlar, en uzun kalış ve kayıtların Ocak 2022'den
+başladığını söyleyen not. Aile adı, telefon ve ileri tarihli rezervasyonlar çıkmaz. Veri herkese açık dağıtımın ?profil=kimlik
+yanıtından gelir (10 dakika önbellek). Gece sayıları "Misafir geçmişi"nin G sütunundan.

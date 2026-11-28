@@ -3,7 +3,6 @@
 (function(){
   var U='https://script.google.com/macros/s/AKfycbwKtB63l09gq7bLoSmVAFuQLSMHf54G9StF38-EkFIHp2IwLJDZESgdLMna8PoAlIDb/exec?misafir=1';
   var rozet=document.querySelector('[data-misafir-rozet]'), liste=document.querySelector('[data-misafir-liste]');
-  if(!rozet&&!liste) return;
   /* Mehmet'in söylediği görünüşler (ad küçük harfle). renk: aşağıdaki RENKLER'den biri; boy: kucuk | orta | buyuk.
      Burada olmayan köpek rastgele (adından) bir renk ve orta boy alır. */
   var KOPEK={
@@ -44,8 +43,8 @@
       : x.kalan<=0 ? 'bu akşam evine dönüyor'
       : (x.yeni ? 'bugün geldi · ' : '')+x.kalan+' gün daha bizimle';
   }
-  /* Mehmet'e özel köpek profili: "Takvime işle" dağıtımı (yalnızca onun Google oturumuyla açılır) */
-  var PROFIL='https://script.google.com/macros/s/AKfycbzMsFg2F_QOtQ-WPgHzruVZZfko1cSL3pE_WgezOQSErTZiNLHieQbFsgXsG4VsBlm3/exec?profil=';
+  /* adına ikinci dokunuş köpeğin profilini açar (/kopek/); bunun için bir davet yazısı yok */
+  var PROFIL='/kopek/#';
   function gelis(x){
     if(!x.gelis) return '';
     if(x.gelis===1) return 'İlk gelişi';
@@ -70,13 +69,11 @@
         return '<li'+(g?' class="acilir" tabindex="0" role="button" aria-expanded="false"':'')+'>'+yuz(x.ad,x)+'<span class="ad">'+esc(x.ad)+'</span><span class="ne">'+esc(ne(x))+'</span>'
           +(g?'<span class="gelis" hidden>'+esc(g)+'</span>':'')+'</li>';
       }).join('');
-      var sahip=false; try{ sahip=localStorage.getItem('mck-sahip')==='1'; }catch(e){}
       [].forEach.call(liste.querySelectorAll('li.acilir'),function(li,i){
         var x=m[i];
-        if(sahip&&x.kimlik){ var gl=li.querySelector('.gelis'); gl.innerHTML=gl.innerHTML+' <span class="profil-ok">· profil →</span>'; }
         function ac(){
           var g=li.querySelector('.gelis'), a=g.hidden;
-          if(!a&&sahip&&x.kimlik){ location.href=PROFIL+encodeURIComponent(x.kimlik); return; }
+          if(!a&&x.kimlik){ location.href=PROFIL+encodeURIComponent(x.kimlik); return; }
           g.hidden=!a; li.setAttribute('aria-expanded',a?'true':'false');
         }
         li.addEventListener('click',ac);
@@ -85,7 +82,9 @@
       liste.hidden=false;
     }
   }
-  var k='mck-misafir5', simdi=Date.now(), bugun=new Date().toDateString();
+  window.mckYuz=yuz;   /* köpek profili sayfası da aynı yüzü çizer */
+  if(!rozet&&!liste) return;
+  var k='mck-misafir6', simdi=Date.now(), bugun=new Date().toDateString();
   try{ var o=JSON.parse(sessionStorage.getItem(k)||'null'); if(o&&o.gun===bugun&&simdi-o.t<600000){ ciz(o.v); return; } }catch(e){}
   fetch(U).then(function(r){return r.json()}).then(function(v){
     try{ sessionStorage.setItem(k,JSON.stringify({t:simdi,gun:bugun,v:v})); }catch(e){}
