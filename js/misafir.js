@@ -44,6 +44,12 @@
       : x.kalan<=0 ? 'bu akşam evine dönüyor'
       : (x.yeni ? 'bugün geldi · ' : '')+x.kalan+' gün daha bizimle';
   }
+  function gelis(x){
+    if(!x.gelis) return '';
+    if(x.gelis===1) return 'İlk gelişi';
+    var i=x.ilk?x.ilk.split('-'):null;
+    return x.gelis+'. gelişi'+(i?' · ilk kez '+AY[+i[1]-1]+' '+i[0]:'');
+  }
   function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
   var AY=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'], GUN=['Pazar','Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi'];
   function tarih(t){ var d=t?new Date(t+'T12:00'):new Date(); return d.getDate()+' '+AY[d.getMonth()]+' '+GUN[d.getDay()]; }
@@ -58,12 +64,19 @@
     if(liste){
       liste.querySelector('[data-sayi]').textContent=m.length;
       liste.querySelector('ul').innerHTML=m.map(function(x){
-        return '<li>'+yuz(x.ad,x)+'<span class="ad">'+esc(x.ad)+'</span><span class="ne">'+esc(ne(x))+'</span></li>';
+        var g=gelis(x);
+        return '<li'+(g?' class="acilir" tabindex="0" role="button" aria-expanded="false"':'')+'>'+yuz(x.ad,x)+'<span class="ad">'+esc(x.ad)+'</span><span class="ne">'+esc(ne(x))+'</span>'
+          +(g?'<span class="gelis" hidden>'+esc(g)+'</span>':'')+'</li>';
       }).join('');
+      [].forEach.call(liste.querySelectorAll('li.acilir'),function(li){
+        function ac(){ var g=li.querySelector('.gelis'), a=g.hidden; g.hidden=!a; li.setAttribute('aria-expanded',a?'true':'false'); }
+        li.addEventListener('click',ac);
+        li.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); ac(); } });
+      });
       liste.hidden=false;
     }
   }
-  var k='mck-misafir3', simdi=Date.now(), bugun=new Date().toDateString();
+  var k='mck-misafir4', simdi=Date.now(), bugun=new Date().toDateString();
   try{ var o=JSON.parse(sessionStorage.getItem(k)||'null'); if(o&&o.gun===bugun&&simdi-o.t<600000){ ciz(o.v); return; } }catch(e){}
   fetch(U).then(function(r){return r.json()}).then(function(v){
     try{ sessionStorage.setItem(k,JSON.stringify({t:simdi,gun:bugun,v:v})); }catch(e){}

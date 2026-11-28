@@ -401,7 +401,7 @@ function bildirim(t, tabloUrl) {
    Site bunu ayrı bir dağıtımla okur: Dağıt → Yeni dağıtım → Web uygulaması, Çalıştıran: ben, Erişim: Herkes.
    (Takvime işle bağlantıları imza ister; herkese açık dağıtım onları açmaz.) */
 function misafirlerJson() {
-  var on = CacheService.getScriptCache(), k = 'misafirler3-' + Utilities.formatDate(new Date(), 'Europe/Istanbul', 'yyyyMMdd');
+  var on = CacheService.getScriptCache(), k = 'misafirler4-' + Utilities.formatDate(new Date(), 'Europe/Istanbul', 'yyyyMMdd');
   var veri = on.get(k);
   if (!veri) {
     veri = JSON.stringify(bugunkuMisafirler());
@@ -432,8 +432,13 @@ function bugunkuMisafirler() {
     var r = acik.match(/(?:^|\n|<br>)\s*renk\s*:\s*([^\n<]+)/i), b = acik.match(/(?:^|\n|<br>)\s*boy\s*:\s*([^\n<]+)/i);
     if (r) kayit.renk = renkAdi(r[1]);
     if (b) kayit.boy = boyAdi(b[1]);
+    var km = acik.match(/(?:^|\n|<br>)\s*kimlik\s*:\s*([^\n<]+)/i);
+    kayit._kimlik = km ? sade(km[1]) : null;
+    kayit._bas = Utilities.formatDate(bas, 'Europe/Istanbul', 'yyyy-MM-dd');
     liste.push(kayit);
   });
+  try { gelisSayilari(c, liste); } catch (hata) { console.log('geliş sayısı: ' + hata); }
+  liste.forEach(function (x) { delete x._kimlik; delete x._bas; });
   return { tarih: Utilities.formatDate(new Date(), 'Europe/Istanbul', 'yyyy-MM-dd'), misafirler: liste };
 }
 
@@ -448,3 +453,45 @@ function renkAdi(x) {
   return undefined;
 }
 function boyAdi(x) { var t = sade(x); return /kucuk|mini|minik/.test(t) ? 'kucuk' : /buyuk|iri/.test(t) ? 'buyuk' : /orta/.test(t) ? 'orta' : undefined; }
+
+/* ---------- Kaçıncı gelişi ----------
+   Geçmiş (Ocak 2022 – Ekim 2026) bu tablonun "Misafir geçmişi" sekmesinde: bir köpek bir satır,
+   gelişleri "Tarihler" sütununda (yyaagg, sonda g = gündüz). "Takma adlar" sekmesi farklı yazımları
+   aynı köpeğe bağlar (Dobi → dobby). 1 Kasım 2026'dan sonrası doğrudan "Misafirler" takviminden sayılır.
+   Aynı adlı iki farklı köpek için takvim açıklamasına "Kimlik: maya-jack" gibi bir satır yazılır.
+   Siteye yalnızca sayı ve ilk gelişin ayı çıkar. */
+var GECMIS_SEKME = 'Misafir geçmişi', TAKMA_SEKME = 'Takma adlar', GECMIS_SON = '2026-11-01';
+function gelisSayilari(takvim, liste) {
+  var ss = SpreadsheetApp.getActive(), takma = {}, gecmis = {};
+  var t = ss.getSheetByName(TAKMA_SEKME);
+  if (t) t.getDataRange().getValues().slice(1).forEach(function (r) { if (r[0]) takma[sade(r[0])] = sade(r[1]); });
+  var g = ss.getSheetByName(GECMIS_SEKME);
+  if (g) g.getDataRange().getValues().slice(1).forEach(function (r) {
+    if (!r[0]) return;
+    gecmis[sade(r[0])] = String(r[5]).replace(/^'/, '').split(/\s+/).filter(String).map(function (x) {
+      return '20' + x.slice(0, 2) + '-' + x.slice(2, 4) + '-' + x.slice(4, 6);
+    });
+  });
+  var kimlikBul = function (ad, acik) {
+    var km = (acik || '').match(/(?:^|\n|<br>)\s*kimlik\s*:\s*([^\n<]+)/i), k = km ? sade(km[1]) : sade(ad);
+    return takma[k] || k;
+  };
+  // 1 Kasım 2026'dan bugüne Misafirler takvimindeki kayıtlar (iptaller hariç, aynı gün iki kez yazılmışsa bir)
+  var yeni = {}, bugun = new Date();
+  takvim.getEvents(new Date(GECMIS_SON + 'T00:00:00+03:00'), new Date(bugun.getTime() + 864e5)).forEach(function (ev) {
+    var baslik = ev.getTitle() || '';
+    if (/^\s*İPTAL/i.test(baslik) || !ev.isAllDayEvent()) return;
+    var k = kimlikBul(baslik.split('·')[0].trim(), ev.getDescription());
+    var gun = Utilities.formatDate(ev.getAllDayStartDate(), 'Europe/Istanbul', 'yyyy-MM-dd');
+    (yeni[k] = yeni[k] || {})[gun] = 1;
+  });
+  liste.forEach(function (x) {
+    var k = x._kimlik ? (takma[x._kimlik] || x._kimlik) : kimlikBul(x.ad, '');
+    var tarihler = (gecmis[k] || []).filter(function (d) { return d < GECMIS_SON; })
+      .concat(Object.keys(yeni[k] || {}).filter(function (d) { return d <= x._bas; }));
+    tarihler = tarihler.filter(function (d, i, a) { return a.indexOf(d) === i; }).sort();
+    if (tarihler.indexOf(x._bas) < 0) tarihler.push(x._bas);
+    x.gelis = tarihler.filter(function (d) { return d <= x._bas; }).length;
+    x.ilk = tarihler[0].slice(0, 7);
+  });
+}

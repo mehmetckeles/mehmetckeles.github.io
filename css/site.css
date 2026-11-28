@@ -249,4 +249,10 @@ nav.main a[aria-current]{color:var(--ink);border-bottom-color:var(--ink)}
 .m-kart li:nth-child(odd) .yuz{transform:rotate(-5deg)}.m-kart li:nth-child(even) .yuz{transform:rotate(5deg)}
 .m-kart .ad{grid-area:ad;font-family:var(--display);font-weight:600;font-size:var(--t-metin)}
 .m-kart .ne{grid-area:ne;font-size:var(--t-kucuk);opacity:.85}
+.m-kart li{grid-template-areas:"yuz ad" "yuz ne" "yuz gelis"}
+.m-kart li.acilir{cursor:pointer;-webkit-tap-highlight-color:transparent}
+.m-kart li.acilir .ad{text-decoration:underline dotted rgba(255,255,255,.6);text-underline-offset:4px;text-decoration-thickness:1.5px}
+.m-kart li.acilir:focus-visible{outline:2px solid #F3FF53;outline-offset:2px;border-radius:6px}
+.m-kart .gelis{grid-area:gelis;justify-self:start;margin-top:6px;background:#F3FF53;color:#151515;font-family:var(--display);font-weight:600;font-size:var(--t-kucuk);white-space:nowrap;padding:3px 10px;border-radius:99px}
+.m-kart .gelis[hidden]{display:none}
 .m-yuzler .yuz.kucuk{width:27px;height:27px}.m-yuzler .yuz.buyuk{width:46px;height:46px}
