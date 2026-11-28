@@ -6,8 +6,13 @@
   if(!rozet&&!liste) return;
   var RENK=[['#C8873E','#8A5520'],['#F1E3C8','#C9A877'],['#2B2522','#151110'],['#9A8F86','#5E554F'],['#E0B25A','#A97A26'],['#B9643A','#7A3A1C'],['#FFFFFF','#D9D2C7']];
   function sira(ad){var h=0;for(var i=0;i<ad.length;i++)h=(h*31+ad.charCodeAt(i))>>>0;return h}
+  /* aynı gün iki köpek aynı yüzü almasın: renk + kulak birleşimi doluysa sıradakine geç */
+  var dolu={}, secim={};
+  function sec(ad){ if(secim[ad]) return secim[ad]; var h=sira(ad), k=Math.floor(h/7)%3;
+    for(var i=0;i<RENK.length;i++){ var r=(h+i)%RENK.length; if(!dolu[r]){ dolu[r]=1; return secim[ad]=[r,k]; } }
+    return secim[ad]=[h%RENK.length,k]; }
   function yuz(ad){
-    var h=sira(ad), r=RENK[h%RENK.length], kulak=h%3, koyu=(r[0]==='#2B2522');
+    var s=sec(ad), r=RENK[s[0]], kulak=s[1], koyu=(r[0]==='#2B2522');
     var g=koyu?'#F6F1E7':'#1A1512';
     var k = kulak===0 ? '<ellipse cx="13" cy="25" rx="7" ry="13" transform="rotate(18 13 25)" fill="'+r[1]+'"/><ellipse cx="51" cy="25" rx="7" ry="13" transform="rotate(-18 51 25)" fill="'+r[1]+'"/>'
           : kulak===1 ? '<path d="M12 22 L16 4 L28 16Z" fill="'+r[1]+'"/><path d="M52 22 L48 4 L36 16Z" fill="'+r[1]+'"/>'

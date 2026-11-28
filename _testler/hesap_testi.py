@@ -119,7 +119,7 @@ with sync_playwright() as p:
     # ---------- HIZLI KAPI: Planla düğmesi, ana sayfa kutusu, planla sayfası, gündüz formu ----------
     pg=page(); pg.goto(BASE+'/'); pg.wait_for_timeout(500)
     ok('Ana sayfa: ilk ekranda "Gündüz misafirliği planla" ve "Konaklama planla"', pg.locator('.aile a.btn').count()==2 and pg.locator('.aile a.btn').first.bounding_box()['y']<400)
-    ok('Ana sayfa: kutu bağlantıları doğru yere gider', [a.get_attribute('href') for a in pg.locator('.aile a').all()]==['on-rezervasyon/?tur=gunduz','on-rezervasyon/','odeme/','ucret/'])
+    ok('Ana sayfa: kutu bağlantıları doğru yere gider', [a.get_attribute('href') for a in pg.locator('.aile .row a, .aile .alt a').all()]==['on-rezervasyon/?tur=gunduz','on-rezervasyon/','odeme/','ucret/'])
     eksik=[y for y in ['/','/konaklama.html','/okullar.html','/tut.html','/yazilar.html','/cv.html','/ucret/','/odeme/','/on-rezervasyon/','/tanisma-gorusmesi/','/planla/'] if (pg.goto(BASE+y) or True) and not pg.locator('header .planla-btn').is_visible()]
     ok('Her sayfanın başında sarı "Planla" görünür (telefonda)', not eksik, eksik)
     gz=ctx.new_page(); gz.set_viewport_size({'width':1280,'height':800}); gz.goto(BASE+'/konaklama.html'); gz.wait_for_timeout(300)
@@ -137,6 +137,17 @@ with sync_playwright() as p:
     bz.click('#bz-ucret'); bz.wait_for_timeout(800)
     ok('Tahmini ücret kartı ödeme sayfasını aynı tarih ve adla açar', '/odeme/' in bz.url and 'giris=2026-12-08' in bz.url and bz.text_content('#odeme-baslik')=='Ali Bey, şimdiden teşekkürler.' and 'saat=19:00' in bz.url and bz.text_content('#gonder-tutar')=='21.185 TL', (bz.url, bz.text_content('#gonder-tutar')))
     bz.close()
+    import json as _j
+    mv=_j.dumps({"tarih":"2026-11-28","misafirler":[{"ad":"Kaju","tur":"konaklama","kalan":4,"yeni":False},{"ad":"Dobi","tur":"gunduz","kalan":0,"yeni":True}]})
+    ms=ctx.new_page(); ms.route('https://script.google.com/**',lambda r:r.fulfill(body=mv,content_type='application/json',headers={'Access-Control-Allow-Origin':'*'}))
+    ms.goto(BASE+'/'); ms.evaluate('sessionStorage.clear()'); ms.reload(); ms.wait_for_timeout(800)
+    ok('Ana sayfa: "2 köpek ikinci evinde" kartı, tarih ve iki yüz', ms.locator('[data-misafir-rozet]').is_visible() and ms.text_content('[data-misafir-rozet] [data-sayi]')=='2' and ms.text_content('[data-misafir-rozet] [data-tarih]')=='28 Kasım Cumartesi' and ms.locator('[data-misafir-rozet] .mk').count()==2)
+    ms.goto(BASE+'/konaklama.html'); ms.wait_for_timeout(800)
+    ok('Konaklama: liste "4 gün daha bizimle" ve "bugün gündüz misafirimiz"', [x.strip() for x in ms.locator('.m-kart .ne').all_text_contents()]==['4 gün daha bizimle','bugün gündüz misafirimiz'])
+    ms2=ctx.new_page(); ms2.route('https://script.google.com/**',lambda r:r.fulfill(body='{"misafirler":[]}',content_type='application/json',headers={'Access-Control-Allow-Origin':'*'}))
+    ms2.goto(BASE+'/'); ms2.evaluate('sessionStorage.clear()'); ms2.reload(); ms2.wait_for_timeout(800)
+    ok('Ev boşken kart görünmez', ms2.locator('[data-misafir-rozet]').is_hidden())
+    ms.close(); ms2.close()
     tz=ctx.new_page(); tz.goto(BASE+'/tanisma-gorusmesi/'); tz.wait_for_timeout(300)
     ok('Tanışma: "Ne için" seçimi var, konu kartı uyum formuna gider', tz.locator('.ne-icin a.ne-kart[href="../uyum/"]').count()==1 and tz.locator('.ne-kart.secili').count()==1); tz.close()
     pg.click('.secenek.ana'); pg.wait_for_timeout(500)

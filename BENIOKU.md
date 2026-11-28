@@ -67,3 +67,8 @@ Mehmet bir rezervasyonu kabul edince aileye gönderdiği sayfa. Panelde "Misafir
 Ödeme sayfasının "Hesabı hazırlayıp gönder" bağlantıları da aynı yolla gizlidir (/odeme/#…); sayfa açılınca bilgiler adres çubuğuna ?… olarak yerleşir.
 
 Alış saati: bütün hesaplayıcılar (Konaklama, Ücret, Ödeme) 19.00 ile başlar, çünkü aileler köpeği çoğunlukla 15.00'ten sonra alır. Hazırlanan ödeme bağlantıları saati her zaman taşır; saatsiz eski bağlantılar 12.00 ile açılır (o bağlantılar öyle hazırlanmıştı).
+
+## Bugünkü misafirler
+
+Ana sayfanın en üstünde kırmızı "3 köpek ikinci evinde" kartı (tarih, köpeklerin küçük yüzleri ve adları); dokununca konaklama sayfasındaki "Bugün evde" listesi açılır. Veri "Misafirler" takviminden gelir: bildirim betiğindeki misafirlerJson(), ayrı ve herkese açık bir dağıtımla (Dağıtımları yönet → "Site · bugünkü misafirler") yalnızca köpek adını, gündüz/konaklama bilgisini ve kalan gün sayısını verir; aile adı, telefon, tarih çıkmaz. Kayıt başlığının ilk parçası köpeğin adıdır ("Kaju · konaklama · Nejat" ya da yalnız "Dobi"); tek günlük kayıt gündüz misafirliği sayılır; başlığı "İPTAL" ile başlayan ya da içinde "gizli" geçen kayıt görünmez; aynı ad iki kez yazılmışsa bir kez sayılır. Betik değişirse bu dağıtıma da yeni sürüm verilir (adres değişmez). Ev boşken kart görünmez. Köpek yüzleri js/misafir.js içinde kodla çizilir; aynı gün her köpeğe ayrı renk düşer. Maskot görselleri gelince yüzler onlarla değiştirilebilir.
+
